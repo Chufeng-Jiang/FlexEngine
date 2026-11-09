@@ -47,5 +47,7 @@ def test_flashinfer_paged_decode_matches_sdpa(length):
 
     expected = attention_for_request(query, cache, 0, "r", length, position, "materialized")
     actual = flashinfer_paged_decode_batch(query, cache, 0, table, position, torch.ones(1, device="cuda:0"))
+    integrated = attention_for_request(query, cache, 0, "r", length, position, "flashinfer")
 
     torch.testing.assert_close(actual, expected, atol=2e-2, rtol=2e-2)
+    torch.testing.assert_close(integrated, expected, atol=2e-2, rtol=2e-2)

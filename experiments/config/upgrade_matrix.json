@@ -1,0 +1,26 @@
+{
+  "defaults": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "workload": "w4",
+    "mode": "poisson",
+    "rate": 1.0,
+    "concurrency": 8,
+    "policy": "adaptive",
+    "attention": "materialized",
+    "token_budget": 256,
+    "prefill_chunk_size": 128,
+    "prefix_cache": false,
+    "prefix_ratio": 0,
+    "cuda_graph": false,
+    "warmup_requests": 20,
+    "measured_requests": 200,
+    "repetitions": 5
+  },
+  "studies": [
+    {"study": "attention", "matrix": {"attention": ["materialized", "triton", "flashinfer"]}},
+    {"study": "graph", "matrix": {"attention": ["materialized", "triton"], "cuda_graph": [false, true]}},
+    {"study": "scheduler", "matrix": {"policy": ["fcfs", "decode_first", "slo_aware", "adaptive"], "rate": [0.5, 1.0, 1.5]}},
+    {"study": "budget", "matrix": {"token_budget": [64, 128, 256, 512]}},
+    {"study": "prefix", "fixed": {"workload": "w5", "prefix_ratio": 75}, "matrix": {"prefix_cache": [false, true]}}
+  ]
+}

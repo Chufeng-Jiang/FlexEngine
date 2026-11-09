@@ -148,6 +148,9 @@ class Qwen2Adapter:
             if self.attention_backend == "triton":
                 from flexengine.kernels.paged_attention import triton_paged_decode_batch
                 output = triton_paged_decode_batch(q, cache, idx, block_tables, positions, active_mask)
+            elif self.attention_backend == "flashinfer":
+                from flexengine.attention.flashinfer_backend import flashinfer_paged_decode_batch
+                output = flashinfer_paged_decode_batch(q, cache, idx, block_tables, positions, active_mask)
             else:
                 token_positions = torch.arange(max_tokens, device=self.device)
                 table_columns = token_positions // block_size

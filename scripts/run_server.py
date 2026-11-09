@@ -11,7 +11,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--model", default=None)
     p.add_argument("--model-revision", default=None)
     p.add_argument("--policy", choices=["fcfs", "decode_first", "slo_aware", "adaptive"], default=None)
-    p.add_argument("--attention", choices=["blockwise", "materialized", "triton"], default=None)
+    p.add_argument("--attention", choices=["blockwise", "materialized", "triton", "flashinfer"], default=None)
     p.add_argument("--trace-dir", default=None)
     p.add_argument("--token-budget", type=int, default=None)
     p.add_argument("--prefill-chunk-size", type=int, default=None)

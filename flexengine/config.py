@@ -31,7 +31,7 @@ class EngineConfig:
     prefix_cache_max_entries: int = 128
     cuda_graph: bool = False
     scheduler_policy: str = "fcfs"  # fcfs, decode_first, slo_aware
-    attention_backend: str = "blockwise"  # blockwise, materialized, triton
+    attention_backend: str = "blockwise"  # blockwise, materialized, triton, flashinfer
     rmsnorm_backend: str = "torch"  # torch, triton
     ttft_slo_ms: float = 2000.0
     itl_slo_ms: float = 200.0
@@ -52,7 +52,7 @@ class EngineConfig:
             raise ValueError("max_waiting must be nonnegative")
         if self.scheduler_policy not in ("fcfs", "decode_first", "slo_aware", "adaptive"):
             raise ValueError("Unknown scheduler_policy")
-        if self.attention_backend not in ("blockwise", "materialized", "triton"):
+        if self.attention_backend not in ("blockwise", "materialized", "triton", "flashinfer"):
             raise ValueError("Unknown attention_backend")
         if self.rmsnorm_backend not in ("torch", "triton"):
             raise ValueError("Unknown rmsnorm_backend")

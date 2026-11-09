@@ -22,6 +22,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.7", "numpy>=1.24", "matplotlib>=3.7", "requests>=2.31"]
 triton = ["triton>=3.0"]
+flashinfer = ["flashinfer-python>=0.2"]
 
 [tool.setuptools.packages.find]
 include = ["flexengine*"]

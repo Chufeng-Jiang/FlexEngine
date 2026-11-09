@@ -377,6 +377,7 @@ class Engine:
                     "prefix_saved_tokens": self.prefix_saved_tokens,
                     "prefix_evictions": self.prefix_cache.evictions if self.prefix_cache is not None else 0,
                     "prefix_shared_blocks": self.prefix_cache.shared_blocks if self.prefix_cache is not None else 0,
+                    "prefix_cache": self.prefix_cache.stats() if self.prefix_cache is not None else None,
                     "cuda_graph": self.graph_manager.stats() if self.graph_manager is not None else None,
                     "cuda_graph_delta": graph_delta,
                 })
@@ -400,4 +401,5 @@ class Engine:
                     "prefix_saved_tokens": self.prefix_saved_tokens,
                     "prefix_evictions": prefix.evictions if prefix is not None else 0,
                     "prefix_shared_blocks": prefix.shared_blocks if prefix is not None else 0,
+                    "prefix_cache": prefix.stats() if prefix is not None else None,
                     "cuda_graph": graph}

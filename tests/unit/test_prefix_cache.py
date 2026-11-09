@@ -118,3 +118,21 @@ def test_cancellation_releases_request_without_releasing_cache_or_peer():
     assert all(allocator.refs[block] == 3 for block in match.block_ids)
     assert allocator.materialize(0, "b", 8)[0].shape[0] == 8
     allocator.assert_invariants()
+
+
+def test_lookup_accounts_hits_misses_reused_tokens_blocks_and_time():
+    allocator = make_cache()
+    prefixes = PrefixCache(allocator, max_entries=2)
+    seed_prefix(allocator, "source", list(range(8)))
+    prefixes.insert("source", list(range(8)), IDENTITY)
+
+    assert prefixes.lookup(list(range(8)) + [9], IDENTITY) is not None
+    assert prefixes.lookup([99, 100, 101, 102, 103], IDENTITY) is None
+
+    stats = prefixes.stats()
+    assert stats["lookups"] == 2
+    assert stats["hits"] == 1
+    assert stats["misses"] == 1
+    assert stats["reused_tokens"] == 8
+    assert stats["reused_blocks"] == 2
+    assert stats["lookup_ns"] > 0

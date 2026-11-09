@@ -34,6 +34,7 @@ def test_runtime_prefix_hit_skips_complete_blocks_and_records_saved_tokens(conf)
         assert request.cached_tokens >= 8
         assert engine.prefix_cache.hits == 1
         assert engine.snapshot()["prefix_saved_tokens"] >= 8
+        assert engine.snapshot()["prefix_cache"]["reused_blocks"] >= 2
     finally:
         engine.stop()
 

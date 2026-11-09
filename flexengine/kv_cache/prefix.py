@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from collections.abc import Hashable, Sequence
 from dataclasses import dataclass
+from time import perf_counter_ns
 
 from flexengine.kv_cache.allocator import PagedKVCache
 
@@ -36,8 +37,13 @@ class PrefixCache:
         self.lookups = 0
         self.hits = 0
         self.evictions = 0
+        self.insertions = 0
+        self.lookup_ns = 0
+        self.reused_tokens = 0
+        self.reused_blocks = 0
 
     def lookup(self, tokens: Sequence[int], identity: Hashable) -> PrefixMatch | None:
+        started = perf_counter_ns()
         self.lookups += 1
         block_size = self.allocator.layout.block_size
         token_tuple = tuple(tokens)
@@ -56,10 +62,14 @@ class PrefixCache:
             if common and (best is None or common > best[0]):
                 best = (common, entry_key, blocks[: common // block_size])
         if best is None:
+            self.lookup_ns += perf_counter_ns() - started
             return None
         length, entry_key, blocks = best
         self._entries.move_to_end(entry_key)
         self.hits += 1
+        self.reused_tokens += length
+        self.reused_blocks += len(blocks)
+        self.lookup_ns += perf_counter_ns() - started
         return PrefixMatch(PrefixKey(identity, token_tuple[:length]), blocks)
 
     def insert(self, request_id: str, tokens: Sequence[int], identity: Hashable) -> PrefixMatch:
@@ -80,6 +90,7 @@ class PrefixCache:
         for block in blocks:
             self.allocator.retain_block(block)
         self._entries[key] = blocks
+        self.insertions += 1
         while len(self._entries) > self.max_entries:
             self.evict()
         return PrefixMatch(key, blocks)
@@ -102,3 +113,16 @@ class PrefixCache:
     @property
     def shared_blocks(self) -> int:
         return sum(len(blocks) for blocks in self._entries.values())
+
+    def stats(self) -> dict[str, int]:
+        return {
+            "lookups": self.lookups,
+            "hits": self.hits,
+            "misses": self.lookups - self.hits,
+            "lookup_ns": self.lookup_ns,
+            "reused_tokens": self.reused_tokens,
+            "reused_blocks": self.reused_blocks,
+            "insertions": self.insertions,
+            "evictions": self.evictions,
+            "shared_blocks": self.shared_blocks,
+        }

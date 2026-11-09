@@ -19,6 +19,7 @@ def test_run_server_experiment_flags_map_to_environment(monkeypatch):
         "FLEX_MAX_NUM_SEQS",
         "FLEX_PREFIX_CACHE",
         "FLEX_PREFIX_CACHE_MAX_ENTRIES",
+        "FLEX_PREFILL_CHUNK_SIZE",
     ):
         monkeypatch.delenv(key, raising=False)
     args = build_parser().parse_args(
@@ -30,6 +31,8 @@ def test_run_server_experiment_flags_map_to_environment(monkeypatch):
             "--max-num-seqs", "16",
             "--prefix-cache",
             "--prefix-cache-max-entries", "64",
+            "--prefill-chunk-size", "96",
+            "--policy", "adaptive",
         ]
     )
 
@@ -42,3 +45,5 @@ def test_run_server_experiment_flags_map_to_environment(monkeypatch):
     assert os.environ["FLEX_MAX_NUM_SEQS"] == "16"
     assert os.environ["FLEX_PREFIX_CACHE"] == "true"
     assert os.environ["FLEX_PREFIX_CACHE_MAX_ENTRIES"] == "64"
+    assert os.environ["FLEX_PREFILL_CHUNK_SIZE"] == "96"
+    assert os.environ["FLEX_SCHEDULER_POLICY"] == "adaptive"

@@ -19,17 +19,20 @@ class Chunk:
 
 
 class Scheduler:
-    def __init__(self, policy: str, token_budget: int, ttft_ms: float, itl_ms: float):
+    def __init__(
+        self, policy: str, token_budget: int, ttft_ms: float, itl_ms: float, prefill_chunk_size: int = 128
+    ):
         self.policy = policy
         self.token_budget = token_budget
         self.ttft_ms = ttft_ms
         self.itl_ms = itl_ms
+        self.prefill_chunk_size = prefill_chunk_size
 
     def ordered(self, requests: list[Request]) -> list[Request]:
         now = monotonic()
         if self.policy == "fcfs":
             return sorted(requests, key=lambda r: (r.arrived, -r.priority))
-        if self.policy == "decode_first":
+        if self.policy in ("decode_first", "adaptive"):
             def rank_decode_first(r: Request):
                 overdue_prefill = (
                     r.in_prefill
@@ -59,6 +62,8 @@ class Scheduler:
                 break
             if req.in_prefill:
                 length = min(budget, len(req.full_context) - req.cached_tokens)
+                if self.policy == "adaptive":
+                    length = min(length, self.prefill_chunk_size)
             elif req.generated_ids:
                 length = 1
             else:

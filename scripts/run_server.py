@@ -10,10 +10,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--port", type=int, default=8000)
     p.add_argument("--model", default=None)
     p.add_argument("--model-revision", default=None)
-    p.add_argument("--policy", choices=["fcfs", "decode_first", "slo_aware"], default=None)
+    p.add_argument("--policy", choices=["fcfs", "decode_first", "slo_aware", "adaptive"], default=None)
     p.add_argument("--attention", choices=["blockwise", "materialized", "triton"], default=None)
     p.add_argument("--trace-dir", default=None)
     p.add_argument("--token-budget", type=int, default=None)
+    p.add_argument("--prefill-chunk-size", type=int, default=None)
     p.add_argument("--block-size", type=int, default=None)
     p.add_argument("--num-blocks", type=int, default=None)
     p.add_argument("--max-model-len", type=int, default=None)
@@ -37,6 +38,7 @@ def apply_args(args: argparse.Namespace) -> None:
         os.environ["FLEX_TRACE_DIR"] = args.trace_dir
     for argument, environment in (
         ("token_budget", "FLEX_MAX_NUM_BATCHED_TOKENS"),
+        ("prefill_chunk_size", "FLEX_PREFILL_CHUNK_SIZE"),
         ("block_size", "FLEX_KV_BLOCK_SIZE"),
         ("num_blocks", "FLEX_KV_NUM_BLOCKS"),
         ("max_model_len", "FLEX_MAX_MODEL_LEN"),

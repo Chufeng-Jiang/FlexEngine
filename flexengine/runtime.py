@@ -47,8 +47,13 @@ class Engine:
             scratch_id = "__flex_graph_scratch__"
             self.cache.reserve(scratch_id, max(self.graph_manager.buckets) * config.kv_block_size)
             self.graph_scratch_blocks = list(self.cache.tables[scratch_id])
-        self.scheduler = Scheduler(config.scheduler_policy, config.max_num_batched_tokens,
-                                   config.ttft_slo_ms, config.itl_slo_ms)
+        self.scheduler = Scheduler(
+            config.scheduler_policy,
+            config.max_num_batched_tokens,
+            config.ttft_slo_ms,
+            config.itl_slo_ms,
+            config.prefill_chunk_size,
+        )
         self.waiting: deque[Request] = deque()
         self.running: OrderedDict[str, Request] = OrderedDict()
         self.all_requests: dict[str, Request] = {}

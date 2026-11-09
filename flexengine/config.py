@@ -23,6 +23,7 @@ class EngineConfig:
     max_model_len: int = 2048
     max_num_seqs: int = 8
     max_num_batched_tokens: int = 128
+    prefill_chunk_size: int = 128
     max_waiting: int = 64
     kv_block_size: int = 16
     kv_num_blocks: int = 1024
@@ -42,14 +43,14 @@ class EngineConfig:
 
     def __post_init__(self) -> None:
         for name in (
-            "max_model_len", "max_num_seqs", "max_num_batched_tokens", "kv_block_size",
+            "max_model_len", "max_num_seqs", "max_num_batched_tokens", "prefill_chunk_size", "kv_block_size",
             "kv_num_blocks", "prefix_cache_max_entries", "max_output_tokens",
         ):
             if getattr(self, name) <= 0:
                 raise ValueError(f"{name} must be positive")
         if self.max_waiting < 0:
             raise ValueError("max_waiting must be nonnegative")
-        if self.scheduler_policy not in ("fcfs", "decode_first", "slo_aware"):
+        if self.scheduler_policy not in ("fcfs", "decode_first", "slo_aware", "adaptive"):
             raise ValueError("Unknown scheduler_policy")
         if self.attention_backend not in ("blockwise", "materialized", "triton"):
             raise ValueError("Unknown attention_backend")
@@ -70,7 +71,8 @@ class EngineConfig:
         kwargs = {}
         for key, field_type in (
             ("model", str), ("model_revision", str), ("device", str), ("dtype", str), ("max_model_len", int),
-            ("max_num_seqs", int), ("max_num_batched_tokens", int), ("max_waiting", int),
+            ("max_num_seqs", int), ("max_num_batched_tokens", int), ("prefill_chunk_size", int),
+            ("max_waiting", int),
             ("kv_block_size", int), ("kv_num_blocks", int), ("scheduler_policy", str),
             ("prefix_cache_max_entries", int),
             ("attention_backend", str), ("rmsnorm_backend", str),

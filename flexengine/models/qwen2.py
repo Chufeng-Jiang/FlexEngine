@@ -101,14 +101,28 @@ class Qwen2Adapter:
                 v = att.v_proj(h).view(len(ids), self.nkv, self.dim)
                 q, k = self._rope(q, k, positions)
             result = []
-            offset = 0
-            for c, n in zip(chunks, lengths):
-                with nvtx(f"attention/block_table layer={idx} len={c.start+n}"):
-                    cache.write(idx, c.request_id, c.start, k[offset : offset + n], v[offset : offset + n])
-                    result.append(attention_for_request(q[offset : offset + n], cache, idx, c.request_id,
-                                                        c.start + n, positions[offset : offset + n],
-                                                        backend=self.attention_backend))
-                offset += n
+            if self.attention_backend == "flashinfer" and all(n == 1 for n in lengths):
+                from flexengine.attention.flashinfer_backend import flashinfer_paged_decode_batch
+
+                max_blocks = max(len(cache.tables[c.request_id]) for c in chunks)
+                tables = torch.zeros((len(chunks), max_blocks), dtype=torch.long, device=self.device)
+                for row, c in enumerate(chunks):
+                    cache.write(idx, c.request_id, c.start, k[row : row + 1], v[row : row + 1])
+                    table = cache.tables[c.request_id]
+                    tables[row, :len(table)] = torch.tensor(table, dtype=torch.long, device=self.device)
+                batched = flashinfer_paged_decode_batch(
+                    q, cache, idx, tables, positions, torch.ones(len(chunks), device=self.device)
+                )
+                result = [batched[row : row + 1] for row in range(len(chunks))]
+            else:
+                offset = 0
+                for c, n in zip(chunks, lengths):
+                    with nvtx(f"attention/block_table layer={idx} len={c.start+n}"):
+                        cache.write(idx, c.request_id, c.start, k[offset : offset + n], v[offset : offset + n])
+                        result.append(attention_for_request(q[offset : offset + n], cache, idx, c.request_id,
+                                                            c.start + n, positions[offset : offset + n],
+                                                            backend=self.attention_backend))
+                    offset += n
             with nvtx(f"layer/{idx}/mlp"):
                 output = torch.cat(result, 0).reshape(len(ids), self.nq * self.dim)
                 x = x + att.o_proj(output)

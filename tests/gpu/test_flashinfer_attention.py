@@ -3,6 +3,7 @@ import torch
 
 from flexengine.attention.flashinfer_backend import (
     flashinfer_available,
+    flashinfer_backend_stats,
     flashinfer_paged_decode_batch,
     flashinfer_workspace,
 )
@@ -46,8 +47,10 @@ def test_flashinfer_paged_decode_matches_sdpa(length):
     table = torch.tensor([cache.tables["r"]], device="cuda:0", dtype=torch.long)
 
     expected = attention_for_request(query, cache, 0, "r", length, position, "materialized")
+    plans_before = flashinfer_backend_stats()["plans"]
     actual = flashinfer_paged_decode_batch(query, cache, 0, table, position, torch.ones(1, device="cuda:0"))
     integrated = attention_for_request(query, cache, 0, "r", length, position, "flashinfer")
 
     torch.testing.assert_close(actual, expected, atol=2e-2, rtol=2e-2)
     torch.testing.assert_close(integrated, expected, atol=2e-2, rtol=2e-2)
+    assert flashinfer_backend_stats()["plans"] - plans_before == 1

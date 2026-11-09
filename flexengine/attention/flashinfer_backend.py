@@ -9,6 +9,9 @@ except (ImportError, OSError):
     _FLASHINFER = None
 
 _WORKSPACES: dict[torch.device, torch.Tensor] = {}
+_WRAPPERS: dict[tuple, object] = {}
+_SIGNATURES: dict[tuple, tuple] = {}
+_PLANS = 0
 
 
 def flashinfer_available() -> bool:
@@ -23,7 +26,12 @@ def flashinfer_workspace(device: torch.device) -> torch.Tensor:
     return workspace
 
 
+def flashinfer_backend_stats() -> dict[str, int]:
+    return {"workspaces": len(_WORKSPACES), "wrappers": len(_WRAPPERS), "plans": _PLANS}
+
+
 def flashinfer_paged_decode_batch(q, cache, layer, block_tables, positions, active_mask):
+    global _PLANS
     if _FLASHINFER is None:
         raise RuntimeError(
             "FlashInfer backend is unavailable; install the optional flashinfer dependency "
@@ -44,10 +52,21 @@ def flashinfer_paged_decode_batch(q, cache, layer, block_tables, positions, acti
         active, positions % cache.layout.block_size + 1, torch.zeros_like(positions)
     ).to(torch.int32)
     workspace = flashinfer_workspace(q.device)
-    wrapper = _FLASHINFER.BatchDecodeWithPagedKVCacheWrapper(workspace, "NHD")
-    wrapper.plan(
-        indptr, indices, last_page_len, q.shape[1], cache.layout.kv_heads,
-        cache.layout.head_dim, cache.layout.block_size, data_type=cache.dtype,
+    key = (
+        q.device, q.shape[0], q.shape[1], cache.layout.kv_heads,
+        cache.layout.head_dim, cache.layout.block_size, cache.dtype,
     )
+    wrapper = _WRAPPERS.get(key)
+    if wrapper is None:
+        wrapper = _FLASHINFER.BatchDecodeWithPagedKVCacheWrapper(workspace, "NHD")
+        _WRAPPERS[key] = wrapper
+    signature = (tuple(page_counts.tolist()), tuple(indices.tolist()), tuple(last_page_len.tolist()))
+    if _SIGNATURES.get(key) != signature:
+        wrapper.plan(
+            indptr, indices, last_page_len, q.shape[1], cache.layout.kv_heads,
+            cache.layout.head_dim, cache.layout.block_size, data_type=cache.dtype,
+        )
+        _SIGNATURES[key] = signature
+        _PLANS += 1
     output = wrapper.run(q, (cache.k[layer], cache.v[layer]))
     return output * active[:, None, None]

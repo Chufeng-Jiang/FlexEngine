@@ -117,3 +117,9 @@ class DecodeGraphManager:
             "padded_slots": self._padded_slots,
             "graph_pool_bytes": self._graph_pool_bytes,
         }
+
+    def stats_delta(self, before: Mapping[str, int]) -> dict[str, int]:
+        current = self.stats()
+        if set(before) != set(current):
+            raise ValueError("graph statistics snapshot has different fields")
+        return {name: current[name] - before[name] for name in current}

@@ -255,6 +255,7 @@ class Engine:
         with self.lock:
             if self.fault:
                 return False
+            step_start = time.perf_counter()
             self._admit()
             candidates = list(self.running.values())
             with nvtx("sched/select"):
@@ -290,13 +291,15 @@ class Engine:
             self.metrics.update_gauges(len(self.waiting), len(self.running), self.cache.used_blocks, shared_blocks)
             if not planned:
                 return False
-            step_start = time.perf_counter()
+            scheduler_ms = (time.perf_counter() - step_start) * 1000.0
             new_tokens = sum(len(c.input_ids) for c in planned)
             prefill_tokens = sum(len(c.input_ids) for c in planned if self.running[c.request_id].in_prefill)
             cuda_start = cuda_end = None
             if torch.cuda.is_available() and self.config.device.startswith("cuda"):
                 cuda_start, cuda_end = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
                 cuda_start.record()
+            graph_before = self.graph_manager.stats() if self.graph_manager is not None else None
+            executor_start = time.perf_counter()
             try:
                 with nvtx(f"executor/step batch={len(planned)} tokens={new_tokens}"):
                     outputs = self._graph_forward(planned)
@@ -351,7 +354,12 @@ class Engine:
                     if req.state not in TERMINAL:
                         self._finish(req, State.FAILED, "error", self.fault)
                 return False
+            executor_wall_ms = (time.perf_counter() - executor_start) * 1000.0
             gpu_ms = cuda_start.elapsed_time(cuda_end) if cuda_end is not None else None
+            graph_delta = (
+                self.graph_manager.stats_delta(graph_before)
+                if self.graph_manager is not None and graph_before is not None else None
+            )
             self.step_index += 1
             if self.config.trace_steps:
                 self.trace.write("steps", {
@@ -359,7 +367,8 @@ class Engine:
                     "new_tokens": new_tokens, "prefill_tokens": prefill_tokens,
                     "decode_tokens": new_tokens - prefill_tokens, "kv_used_blocks": self.cache.used_blocks,
                     "waiting": len(self.waiting), "running": len(self.running),
-                    "wall_ms": (time.perf_counter() - step_start) * 1000.0, "gpu_ms": gpu_ms,
+                    "wall_ms": (time.perf_counter() - step_start) * 1000.0,
+                    "scheduler_ms": scheduler_ms, "executor_wall_ms": executor_wall_ms, "gpu_ms": gpu_ms,
                     "policy": self.config.scheduler_policy, "attention": self.config.attention_backend,
                     "cuda_allocated_bytes": torch.cuda.memory_allocated() if cuda_end is not None else None,
                     "cuda_reserved_bytes": torch.cuda.memory_reserved() if cuda_end is not None else None,
@@ -369,6 +378,7 @@ class Engine:
                     "prefix_evictions": self.prefix_cache.evictions if self.prefix_cache is not None else 0,
                     "prefix_shared_blocks": self.prefix_cache.shared_blocks if self.prefix_cache is not None else 0,
                     "cuda_graph": self.graph_manager.stats() if self.graph_manager is not None else None,
+                    "cuda_graph_delta": graph_delta,
                 })
             return True
 

@@ -12,6 +12,20 @@ def test_bucket_selection_pads_up_without_delaying():
     assert manager.eligible(1) is False
 
 
+def test_graph_stats_delta_reports_only_new_activity():
+    manager = DecodeGraphManager(device="cpu")
+    before = manager.stats()
+    manager.record_fallback()
+
+    assert manager.stats_delta(before) == {
+        "captures": 0,
+        "replays": 0,
+        "fallbacks": 1,
+        "padded_slots": 0,
+        "graph_pool_bytes": 0,
+    }
+
+
 @pytest.mark.gpu
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA required")
 def test_capture_replay_padding_stable_addresses_and_parity():

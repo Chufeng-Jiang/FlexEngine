@@ -1,3 +1,4 @@
+import json
 from dataclasses import replace
 from queue import Empty
 
@@ -115,3 +116,18 @@ def test_recompute_preemption_no_duplicate_generation(engine):
     assert a.generated_ids[:len(emitted_before)] == emitted_before
     assert len(a.generated_ids) == 7
     assert engine.cache.free_blocks == engine.cache.layout.num_blocks
+
+
+def test_step_trace_separates_scheduler_and_executor_time(conf, tmp_path):
+    cfg = replace(conf, trace_steps=True, trace_dir=str(tmp_path))
+    runtime = Engine(cfg, TinyAdapter())
+    try:
+        runtime.submit("abcd", max_tokens=2)
+        assert runtime.step()
+        record = json.loads((tmp_path / "steps.jsonl").read_text(encoding="utf8").splitlines()[0])
+        assert record["scheduler_ms"] >= 0
+        assert record["executor_wall_ms"] >= 0
+        assert record["wall_ms"] >= record["executor_wall_ms"]
+        assert record["cuda_graph_delta"] is None
+    finally:
+        runtime.stop()

@@ -14,7 +14,7 @@
     "cuda_graph": false,
     "warmup_requests": 20,
     "measured_requests": 200,
-    "repetitions": 5
+    "repetitions": 1
   },
   "studies": [
     {"study": "attention", "matrix": {"attention": ["materialized", "triton", "flashinfer"]}},

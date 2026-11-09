@@ -15,7 +15,7 @@ def test_upgrade_matrix_has_unique_warm_ablation_specs():
     }
     assert all(spec["warmup_requests"] == 20 for spec in specs)
     assert all(spec["measured_requests"] == 200 for spec in specs)
-    assert all(spec["repetitions"] == 5 for spec in specs)
+    assert all(spec["repetitions"] == 1 for spec in specs)
 
 
 def test_upgrade_analyzer_reports_ci_and_p99(tmp_path):

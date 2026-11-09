@@ -32,4 +32,4 @@ The HTTP benchmark owns workload warmup, steady-state sampling, bootstrap confid
 
 ## Validation
 
-Every new metric has a deterministic unit test. Scheduler changes are tested for budget bounds, decode reservation, prefill progress, and overload. Optional FlashInfer tests skip with an explicit reason when unavailable. GPU experiments use a fixed saved trace, 200 measured requests, 20 warmup requests, five repetitions, and preserve raw outputs.
+Every new metric has a deterministic unit test. Scheduler changes are tested for budget bounds, decode reservation, prefill progress, and overload. Optional FlashInfer tests skip with an explicit reason when unavailable. GPU experiments use a fixed saved trace, 200 measured requests, 20 warmup requests, one repetition as explicitly requested on 2026-11-09, and preserve raw outputs.

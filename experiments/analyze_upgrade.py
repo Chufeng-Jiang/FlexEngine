@@ -12,7 +12,7 @@ from benchmarks.benchmark_stats import bootstrap_ci
 METRICS = ("requests_per_sec", "goodput_requests_per_sec", "ttft_p99_ms", "tpot_p99_ms")
 
 
-def aggregate_runs(root: Path, repetitions: int = 5) -> list[dict]:
+def aggregate_runs(root: Path, repetitions: int = 1) -> list[dict]:
     rows = []
     for config_dir in sorted(path for path in root.iterdir() if path.is_dir()):
         summaries = []
@@ -41,7 +41,7 @@ def aggregate_runs(root: Path, repetitions: int = 5) -> list[dict]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="experiments/results/upgrade_20261109")
-    parser.add_argument("--repetitions", type=int, default=5)
+    parser.add_argument("--repetitions", type=int, default=1)
     args = parser.parse_args()
     root = Path(args.input)
     rows = aggregate_runs(root, args.repetitions)

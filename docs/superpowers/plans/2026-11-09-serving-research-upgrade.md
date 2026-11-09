@@ -126,7 +126,7 @@
 - Produces: five-repetition warm artifact, confidence intervals, SLO load curves, attention/graph breakdown, and ablation report.
 
 - [ ] Test matrix uniqueness, saved-trace identity, result completeness, and analyzer statistics.
-- [ ] Run the warm matrix with 20 warmup plus 200 measured requests and five repetitions.
+- [ ] Run the warm matrix with 20 warmup plus 200 measured requests and one repetition (user override on 2026-11-09).
 - [ ] Capture Nsight Systems for materialized/Triton/FlashInfer with graph off/on and Nsight Compute for attention kernels.
 - [ ] Generate tables/plots and document cold start separately from steady state.
 - [ ] Run full pytest, Ruff, artifact audit, and reproduction smoke test.

@@ -1,0 +1,20 @@
+{
+  "cuda": "13.2",
+  "cudnn": 92600,
+  "exported_date": "2026-11-09",
+  "gpu": "NVIDIA GeForce RTX 3080 Ti Laptop GPU, 610.60, 16384, 8.6",
+  "model_revisions": {
+    "Qwen/Qwen2.5-0.5B-Instruct": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "Qwen/Qwen2.5-1.5B-Instruct": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+  },
+  "package_counts": {
+    "flexengine": 90,
+    "vllm": 199
+  },
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "python": "3.13.5",
+  "torch": "2.15.0+cu132",
+  "transformers": "5.22.2",
+  "triton": "3.9.0",
+  "vllm": "0.33.0"
+}

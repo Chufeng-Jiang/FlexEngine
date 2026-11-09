@@ -1,0 +1,14 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "dtype": "float16",
+  "max_model_len": 2048,
+  "concurrency": 4,
+  "requests": 8,
+  "max_output_tokens": 32,
+  "temperature": 0.0,
+  "seed": 42,
+  "repetitions": 3,
+  "url": "http://127.0.0.1:8001/v1/completions",
+  "trace_identity": "w1-prefix0-n8-out32",
+  "workload_trace": "experiments/results/proposal_20261108/workloads/w1-prefix0-n8-out32.json"
+}

@@ -1,0 +1,11 @@
+FlexEngine 2.0 — local validation report
+Date: 2026-11-08
+Execution environment: Linux-6.18.57-x86_64-with-glibc2.41
+Python: Python 3.13.5
+Torch: 2.10.0+cpu CUDA available: False
+
+pytest (all):
+sss..........................................                            [100%]
+42 passed, 3 skipped in 1.60s
+
+CAVEAT: 3 optional real-model/Transformers tests skipped; no target NVIDIA CUDA GPU was available.

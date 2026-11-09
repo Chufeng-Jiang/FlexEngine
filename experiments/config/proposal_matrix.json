@@ -1,0 +1,34 @@
+{
+  "experiments": {
+    "E1": {
+      "name": "e1-{model}-c{concurrency}",
+      "fixed": {"workload": "w1", "policy": "decode_first", "attention": "materialized", "token_budget": 128, "block_size": 16},
+      "matrix": {"model": ["Qwen/Qwen2.5-0.5B-Instruct", "Qwen/Qwen2.5-1.5B-Instruct"], "concurrency": [1, 2, 4, 8]}
+    },
+    "E2": {
+      "name": "e2-{workload}-{policy}",
+      "fixed": {"model": "Qwen/Qwen2.5-0.5B-Instruct", "concurrency": 4, "attention": "materialized", "token_budget": 128, "block_size": 16},
+      "matrix": {"workload": ["w2", "w4"], "policy": ["fcfs", "decode_first", "slo_aware"]}
+    },
+    "E3": {
+      "name": "e3-budget-{token_budget}",
+      "fixed": {"model": "Qwen/Qwen2.5-0.5B-Instruct", "workload": "w4", "concurrency": 4, "policy": "decode_first", "attention": "materialized", "block_size": 16},
+      "matrix": {"token_budget": [64, 128, 256, 512]}
+    },
+    "E4": {
+      "name": "e4-block-{block_size}-{attention}",
+      "fixed": {"model": "Qwen/Qwen2.5-0.5B-Instruct", "workload": "w1", "concurrency": 4, "policy": "decode_first", "token_budget": 128},
+      "matrix": {"block_size": [8, 16, 32], "attention": ["materialized", "blockwise", "triton"]}
+    },
+    "E5": {
+      "name": "e5-prefix-{prefix_cache}-ratio-{prefix_ratio}",
+      "fixed": {"model": "Qwen/Qwen2.5-0.5B-Instruct", "workload": "w5", "concurrency": 4, "policy": "decode_first", "attention": "materialized", "token_budget": 128, "block_size": 16},
+      "matrix": {"prefix_cache": [false, true], "prefix_ratio": [0, 25, 50, 75]}
+    },
+    "E6": {
+      "name": "e6-{attention}-graph-{cuda_graph}",
+      "fixed": {"model": "Qwen/Qwen2.5-0.5B-Instruct", "workload": "w1", "concurrency": 4, "policy": "decode_first", "token_budget": 128, "block_size": 16},
+      "matrix": {"attention": ["materialized", "triton"], "cuda_graph": [false, true]}
+    }
+  }
+}

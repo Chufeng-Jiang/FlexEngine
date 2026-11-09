@@ -1,0 +1,12 @@
+{
+  "name": "W4 Mixed",
+  "seed": 42,
+  "workloads": [
+    {"weight": 0.5, "prompt_tokens": 128, "output_tokens": 128},
+    {"weight": 0.3, "prompt_tokens": 1024, "output_tokens": 32},
+    {"weight": 0.2, "prompt_tokens": 256, "output_tokens": 512}
+  ],
+  "arrival": "poisson",
+  "request_rates": [0.25, 0.5, 1.0, 2.0],
+  "note": "Choose achievable rates on the actual GPU and record rejected requests."
+}

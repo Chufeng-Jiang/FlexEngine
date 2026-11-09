@@ -7,7 +7,7 @@ import json
 import statistics
 from pathlib import Path
 
-from benchmarks.statistics import bootstrap_ci
+from benchmarks.benchmark_stats import bootstrap_ci
 
 METRICS = ("requests_per_sec", "goodput_requests_per_sec", "ttft_p99_ms", "tpot_p99_ms")
 

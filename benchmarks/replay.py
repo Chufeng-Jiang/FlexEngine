@@ -9,6 +9,7 @@ import argparse
 import asyncio
 import json
 import random
+import sys
 import time
 from datetime import datetime, timezone
 from itertools import pairwise
@@ -16,7 +17,10 @@ from pathlib import Path
 
 import httpx
 
-from benchmarks.statistics import summarize_requests, validate_sample_counts
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from benchmarks.benchmark_stats import summarize_requests, validate_sample_counts
 
 
 def save_workload_trace(path: Path, identity: str, workload: list[dict]) -> None:

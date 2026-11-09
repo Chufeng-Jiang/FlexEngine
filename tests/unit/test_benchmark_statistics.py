@@ -1,8 +1,10 @@
 import statistics
+import subprocess
+import sys
 
 import pytest
 
-from benchmarks.statistics import bootstrap_ci, summarize_requests, validate_sample_counts
+from benchmarks.benchmark_stats import bootstrap_ci, summarize_requests, validate_sample_counts
 
 
 def _request(serial: int, *, ttft: float, tpot: float, completed: bool = True) -> dict:
@@ -53,3 +55,12 @@ def test_summary_excludes_warmup_and_reports_tpot_p99():
 def test_invalid_sample_counts_are_rejected(warmup, measured, resamples):
     with pytest.raises(ValueError):
         validate_sample_counts(warmup, measured, resamples)
+
+
+def test_replay_direct_script_entrypoint_loads_local_statistics():
+    result = subprocess.run(
+        [sys.executable, "benchmarks/replay.py", "--help"], capture_output=True, text=True, check=False
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "--warmup-requests" in result.stdout

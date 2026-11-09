@@ -116,12 +116,13 @@ class Qwen2Adapter:
                 result = [batched[row : row + 1] for row in range(len(chunks))]
             else:
                 offset = 0
+                fallback_backend = "materialized" if self.attention_backend == "flashinfer" else self.attention_backend
                 for c, n in zip(chunks, lengths):
                     with nvtx(f"attention/block_table layer={idx} len={c.start+n}"):
                         cache.write(idx, c.request_id, c.start, k[offset : offset + n], v[offset : offset + n])
                         result.append(attention_for_request(q[offset : offset + n], cache, idx, c.request_id,
                                                             c.start + n, positions[offset : offset + n],
-                                                            backend=self.attention_backend))
+                                                            backend=fallback_backend))
                     offset += n
             with nvtx(f"layer/{idx}/mlp"):
                 output = torch.cat(result, 0).reshape(len(ids), self.nq * self.dim)

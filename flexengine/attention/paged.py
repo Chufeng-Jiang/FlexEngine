@@ -37,14 +37,14 @@ def attention_for_request(q: torch.Tensor, cache: PagedKVCache, layer: int, requ
         if len(q) == 1 and q.is_cuda:
             from flexengine.kernels.paged_attention import triton_paged_decode
             return triton_paged_decode(q, cache, layer, request_id, length)
-        backend = "blockwise"
+        return attention_for_request(q, cache, layer, request_id, length, positions, "materialized")
     if backend == "flashinfer":
         if len(q) == 1 and q.is_cuda:
             from flexengine.attention.flashinfer_backend import flashinfer_paged_decode_batch
 
             table = torch.tensor([cache.tables[request_id]], device=q.device, dtype=torch.long)
             return flashinfer_paged_decode_batch(q, cache, layer, table, positions, torch.ones(1, device=q.device))
-        backend = "blockwise"
+        return attention_for_request(q, cache, layer, request_id, length, positions, "materialized")
     if backend != "blockwise":
         raise ValueError("Unknown attention backend")
     q32 = q.float()

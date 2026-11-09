@@ -10,12 +10,13 @@ import asyncio
 import json
 import random
 import time
-from collections import Counter
 from datetime import datetime, timezone
 from itertools import pairwise
 from pathlib import Path
 
 import httpx
+
+from benchmarks.statistics import summarize_requests, validate_sample_counts
 
 
 def save_workload_trace(path: Path, identity: str, workload: list[dict]) -> None:
@@ -66,15 +67,6 @@ def build_or_load_workload(
         output_path.parent.mkdir(parents=True, exist_ok=True)
         save_workload_trace(output_path, trace_identity, generated)
     return generated
-
-
-def percentile(xs, q):
-    xs = sorted(xs)
-    if not xs:
-        return None
-    k = (len(xs) - 1) * q / 100
-    lo, hi = int(k), min(int(k) + 1, len(xs) - 1)
-    return xs[lo] + (xs[hi] - xs[lo]) * (k - lo)
 
 
 def build_prompt(target_tokens, rng):
@@ -164,6 +156,7 @@ async def run(args):
     (out / "client_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf8")
     sem = asyncio.Semaphore(args.concurrency)
     results = []
+    warmup_results = []
     # Precompute workload before launching tasks: request i receives identical
     # prompt/output targets under every server scheduling strategy.
     workload = build_or_load_workload(
@@ -176,12 +169,31 @@ async def run(args):
         trace_identity=args.trace_identity,
         prefix_ratio=args.prefix_ratio,
     )
+    warmup_workload = build_or_load_workload(
+        workload=args.workload,
+        requests=args.warmup_requests,
+        max_output_tokens=args.max_output_tokens,
+        seed=args.seed + 1,
+        input_path=None,
+        output_path=None,
+        trace_identity=f"{args.trace_identity}-warmup",
+        prefix_ratio=args.prefix_ratio,
+    ) if args.warmup_requests else []
     async with httpx.AsyncClient(timeout=httpx.Timeout(args.timeout)) as client:
-        async def job(i):
-            item = workload[i]
+        async def send_item(item, serial):
             async with sem:
-                r = await send(client, args.url, args.model, i, item["prompt"], item["max_output_tokens"],
-                               args.seed, args.ttft_slo_ms, args.itl_slo_ms)
+                return await send(
+                    client, args.url, args.model, serial, item["prompt"], item["max_output_tokens"],
+                    args.seed, args.ttft_slo_ms, args.itl_slo_ms,
+                )
+
+        if warmup_workload:
+            warmup_results.extend(await asyncio.gather(*(
+                send_item(item, -(index + 1)) for index, item in enumerate(warmup_workload)
+            )))
+
+        async def job(i):
+            r = await send_item(workload[i], i)
             results.append(r)
 
         started = time.perf_counter()
@@ -198,19 +210,17 @@ async def run(args):
     with (out / "client_requests.jsonl").open("w", encoding="utf8") as f:
         for r in sorted(results, key=lambda x:x["serial"]):
             f.write(json.dumps(r) + "\n")
-    ttft = [r["ttft_ms"] for r in results if r["ttft_ms"] is not None]
-    e2e = [r["e2e_ms"] for r in results if r["completed"]]
-    itls = [x for r in results for x in r["itl_ms"]]
-    finished = sum(r["completed"] for r in results)
-    good = sum(r["slo_pass"] for r in results)
-    summary = {"wall_seconds":elapsed, "offered_requests":len(results), "completed_requests":finished,
-               "failures":len(results)-finished, "status_counts": dict(Counter(str(r["status"]) for r in results)),
-               "requests_per_sec": finished/elapsed,
-               "goodput_requests_per_sec": good/elapsed, "slo_pass_rate":good/len(results) if results else 0,
-               "ttft_p50_ms":percentile(ttft, 50), "ttft_p95_ms":percentile(ttft, 95),
-               "ttft_p99_ms":percentile(ttft, 99), "e2e_p95_ms":percentile(e2e, 95),
-               "sse_inter_event_p95_ms":percentile(itls, 95),
-               "caveat": "Use engine requests.jsonl for exact output tokens/s and per-token ITL. Client SSE inter-event gaps may skip empty-token events."}
+    summary = summarize_requests(
+        results,
+        elapsed,
+        warmup_results=warmup_results,
+        bootstrap_resamples=args.bootstrap_resamples,
+        seed=args.seed,
+    )
+    summary["caveat"] = (
+        "Use engine requests.jsonl for exact output tokens/s and per-token ITL. "
+        "Client SSE inter-event gaps may skip empty-token events."
+    )
     (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf8")
     print(json.dumps(summary, indent=2))
 
@@ -223,6 +233,8 @@ def main():
     p.add_argument("--workload", choices=["w1", "w2", "w3", "w4", "w5"], default="w1")
     p.add_argument("--prefix-ratio", type=int, choices=[0, 25, 50, 75], default=0)
     p.add_argument("--requests", type=int, default=24)
+    p.add_argument("--warmup-requests", type=int, default=0)
+    p.add_argument("--bootstrap-resamples", type=int, default=2_000)
     p.add_argument("--concurrency", type=int, default=4)
     p.add_argument("--rate", type=float, default=0.5)
     p.add_argument("--seed", type=int, default=42)
@@ -237,6 +249,10 @@ def main():
     args = p.parse_args()
     if min(args.requests, args.concurrency, args.rate, args.timeout) <= 0:
         p.error("requests, concurrency, rate, timeout must be positive")
+    try:
+        validate_sample_counts(args.warmup_requests, args.requests, args.bootstrap_resamples)
+    except ValueError as error:
+        p.error(str(error))
     asyncio.run(run(args))
 
 

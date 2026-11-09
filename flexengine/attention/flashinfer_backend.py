@@ -58,7 +58,7 @@ def flashinfer_paged_decode_batch(q, cache, layer, block_tables, positions, acti
     )
     wrapper = _WRAPPERS.get(key)
     if wrapper is None:
-        wrapper = _FLASHINFER.BatchDecodeWithPagedKVCacheWrapper(workspace, "NHD")
+        wrapper = _FLASHINFER.BatchDecodeWithPagedKVCacheWrapper(workspace, "NHD", use_tensor_cores=True)
         _WRAPPERS[key] = wrapper
     signature = (tuple(page_counts.tolist()), tuple(indices.tolist()), tuple(last_page_len.tolist()))
     if _SIGNATURES.get(key) != signature:

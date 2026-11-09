@@ -32,6 +32,25 @@ def test_flashinfer_workspace_is_reused_per_device():
 
 @pytest.mark.gpu
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA required")
+@pytest.mark.skipif(not flashinfer_available(), reason="FlashInfer is unavailable")
+def test_flashinfer_supports_qwen25_half_b_group_size_seven():
+    length = 17
+    cache = PagedKVCache(CacheLayout(1, 8, 16, 2, 64), device="cuda:0", dtype=torch.float16)
+    cache.reserve("r", length)
+    keys = torch.randn(length, 2, 64, device="cuda:0", dtype=torch.float16)
+    cache.write(0, "r", 0, keys, keys)
+    query = torch.randn(1, 14, 64, device="cuda:0", dtype=torch.float16)
+    position = torch.tensor([length - 1], device="cuda:0")
+    table = torch.tensor([cache.tables["r"]], device="cuda:0", dtype=torch.long)
+
+    expected = attention_for_request(query, cache, 0, "r", length, position, "materialized")
+    actual = flashinfer_paged_decode_batch(query, cache, 0, table, position, torch.ones(1, device="cuda:0"))
+
+    torch.testing.assert_close(actual, expected, atol=2e-2, rtol=2e-2)
+
+
+@pytest.mark.gpu
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA required")
 @pytest.mark.skipif(not flashinfer_available(), reason="FlashInfer is not installed for this Python/CUDA build")
 @pytest.mark.parametrize("length", [1, 17, 129, 513])
 def test_flashinfer_paged_decode_matches_sdpa(length):

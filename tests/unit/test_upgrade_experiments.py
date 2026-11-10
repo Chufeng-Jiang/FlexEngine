@@ -38,3 +38,25 @@ def test_upgrade_analyzer_reports_ci_and_p99(tmp_path):
     assert rows[0]["requests_per_sec_ci95_low"] < 11.0 < rows[0]["requests_per_sec_ci95_high"]
     assert rows[0]["ttft_p99_ms_mean"] == 103.0
     assert rows[0]["completed_requests"] == 1_000
+
+
+def test_common_experiment_artifact_helpers(tmp_path):
+    from experiments.common import add_workload_trace, runs_complete
+
+    destination = tmp_path / "config"
+    assert not runs_complete(destination, 2)
+
+    for repetition in (1, 2):
+        run = destination / f"run-{repetition}"
+        run.mkdir(parents=True)
+        (run / "summary.json").write_text("{}", encoding="utf8")
+    assert runs_complete(destination, 2)
+
+    trace = tmp_path / "workloads" / "trace.json"
+    assert add_workload_trace(["replay"], trace_path=trace) == [
+        "replay", "--save-workload-trace", str(trace),
+    ]
+    trace.write_text("{}", encoding="utf8")
+    assert add_workload_trace(["replay"], trace_path=trace) == [
+        "replay", "--workload-trace", str(trace),
+    ]

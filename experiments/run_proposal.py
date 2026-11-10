@@ -6,12 +6,14 @@ import json
 import os
 import subprocess
 import sys
-import time
 from pathlib import Path
 
-import httpx
 from run_matrix import load_matrix, spec_dict
 
+try:
+    from experiments.common import add_workload_trace, runs_complete, stop_process, wait_ready
+except ModuleNotFoundError:
+    from common import add_workload_trace, runs_complete, stop_process, wait_ready
 from flexengine.config import matched_kv_blocks
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,19 +23,6 @@ MODEL_REVISIONS = {
 }
 
 
-def wait_ready(process: subprocess.Popen, timeout: float = 120.0) -> None:
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        if process.poll() is not None:
-            raise RuntimeError(f"server exited with status {process.returncode}")
-        try:
-            response = httpx.get("http://127.0.0.1:8000/healthz", timeout=1.0)
-            if response.status_code == 200 and response.json().get("status") == "ok":
-                return
-        except (httpx.HTTPError, ValueError):
-            pass
-        time.sleep(0.25)
-    raise TimeoutError("server did not become ready")
 
 
 def server_command(spec, trace_dir: Path) -> list[str]:
@@ -55,7 +44,7 @@ def server_command(spec, trace_dir: Path) -> list[str]:
 def run_spec(spec, output_root: Path, repetitions: int, requests: int, max_output_tokens: int) -> None:
     destination = output_root / spec.experiment / spec.name
     destination.mkdir(parents=True, exist_ok=True)
-    if all((destination / f"run-{index}" / "summary.json").exists() for index in range(1, repetitions + 1)):
+    if runs_complete(destination, repetitions):
         print(f"SKIP {spec.name}", flush=True)
         return
     trace_dir = destination / "engine-trace"
@@ -83,20 +72,11 @@ def run_spec(spec, output_root: Path, repetitions: int, requests: int, max_outpu
                     "--max-output-tokens", str(max_output_tokens), "--seed", "42",
                     "--trace-identity", identity, "--output", str(run_dir),
                 ]
-                if workload_trace.exists():
-                    command += ["--workload-trace", str(workload_trace)]
-                else:
-                    workload_trace.parent.mkdir(parents=True, exist_ok=True)
-                    command += ["--save-workload-trace", str(workload_trace)]
+                command = add_workload_trace(command, trace_path=workload_trace)
                 subprocess.run(command, cwd=ROOT, check=True)
             (destination / "spec.json").write_text(json.dumps(spec_dict(spec), indent=2), encoding="utf8")
         finally:
-            process.terminate()
-            try:
-                process.wait(timeout=20)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait()
+            stop_process(process)
 
 
 def main() -> None:

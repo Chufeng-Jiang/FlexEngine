@@ -7,10 +7,12 @@ import json
 import os
 import subprocess
 import sys
-import time
 from pathlib import Path
 
-import httpx
+try:
+    from experiments.common import add_workload_trace, stop_process, wait_ready
+except ModuleNotFoundError:
+    from common import add_workload_trace, stop_process, wait_ready
 
 ROOT = Path(__file__).resolve().parents[1]
 REVISION = "7ae557604adf67be50417f59c2c2f167def9a775"
@@ -36,18 +38,6 @@ def load_upgrade_matrix(path: Path) -> list[dict]:
     return specs
 
 
-def wait_ready(process: subprocess.Popen, timeout: float = 180.0) -> None:
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        if process.poll() is not None:
-            raise RuntimeError(f"server exited with {process.returncode}")
-        try:
-            if httpx.get("http://127.0.0.1:8000/healthz", timeout=1).status_code == 200:
-                return
-        except httpx.HTTPError:
-            pass
-        time.sleep(0.25)
-    raise TimeoutError("server readiness timeout")
 
 
 def run_spec(spec: dict, output_root: Path) -> None:
@@ -79,18 +69,10 @@ def run_spec(spec: dict, output_root: Path) -> None:
                     "--requests", str(spec["measured_requests"]), "--warmup-requests", str(spec["warmup_requests"]),
                     "--max-output-tokens", "32", "--trace-identity", identity, "--output", str(run_dir),
                 ]
-                if trace.exists():
-                    replay += ["--workload-trace", str(trace)]
-                else:
-                    trace.parent.mkdir(parents=True, exist_ok=True)
-                    replay += ["--save-workload-trace", str(trace)]
+                replay = add_workload_trace(replay, trace_path=trace)
                 subprocess.run(replay, cwd=ROOT, check=True)
         finally:
-            process.terminate()
-            try:
-                process.wait(timeout=20)
-            except subprocess.TimeoutExpired:
-                process.kill()
+            stop_process(process)
 
 
 def main() -> None:

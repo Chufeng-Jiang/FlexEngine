@@ -85,3 +85,4 @@ Thumbs.db
 *.tmp
 *.temp
 *~
+.superpowers/

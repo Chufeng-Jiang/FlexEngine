@@ -136,7 +136,7 @@ nsys --version
 ncu --version
 ```
 
-针对 Windows + WSL2，先实测 Nsight Compute 的性能计数器权限；NVIDIA 文档指出 WSL2 可以进行分析，但需要满足驱动和主机 Performance Counters 设置要求 [R10]。Linux/WSL 的 GPU 可用性与具体 PyTorch/Triton wheel 应通过 smoke test 验证。
+针对 Windows + WSL2，先实测 Nsight Compute 的性能计数器权限；NVIDIA 文档指出 WSL2 可以进行分析，但需要满足驱动和主机 Performance Counters 设置要求 [R10]。Linux/WSL 的 GPU 可用性与具体 PyTorch/Triton wheel 应通过 sanity test 验证。
 
 ## 4. 策略设计：从工程功能到可比较的优化假设
 
@@ -184,7 +184,7 @@ ncu --version
 | C09 | Sampling semantics | greedy 固定输出；采样 RNG 隔离；EOS 截断 | 是 |
 | C10 | API streaming | SSE 逐增量 token，finish_reason，断开后清理 | 是 |
 | C11 | Scheduler invariants | budget 不超配；请求无丢失、重复调度或非法状态 | 是 |
-| C12 | 多模型 smoke | 0.5B 和 1.5B 都能完整运行 | 是 |
+| C12 | 多模型 sanity | 0.5B 和 1.5B 都能完整运行 | 是 |
 
 **数值标准：** FP16 优先比较最大绝对误差、平均绝对误差、相对误差和逐位置 top-1 agreement；初始探索性阈值可用 `atol=2e-2, rtol=2e-2`，须按层、算子和 logits 标度校准。不可仅凭采样文本相同判定数学正确；也不能将浮点 logits 的逐 bit 一致作为普适要求。
 
@@ -282,12 +282,12 @@ NVIDIA GPU 性能岗位明确列出 Nsight Systems、Nsight Compute、PyTorch Pr
 ```bash
 nsys profile --trace=cuda,nvtx,osrt --sample=none \
   --cuda-graph-trace=graph -o results/nsys/mixed_decode \
-  python src/benchmarks/profile_engine.py --model Qwen/Qwen2.5-0.5B-Instruct \
+  python -m flexengine.benchmarking.profiling.engine --model Qwen/Qwen2.5-0.5B-Instruct \
   --workload mixed --steps 200 --batch-size 4
 
 ncu --set full --target-processes all \
   -o results/ncu/paged_attention \
-  python src/benchmarks/profile_kernel.py --kernel paged_attention --batch-size 4
+  python -m flexengine.benchmarking.profiling.kernel --kernel paged_attention --batch-size 4
 ```
 
 **采样规则：** `nsys` 只抓稳定的少量代表性 step；`ncu` 更重，单独运行 kernel case；正式 QPS/latency 由不带 profiler 的服务实例测量。不要使用 `ncu` 下的 end-to-end 时间当正式性能结果。
@@ -351,13 +351,13 @@ src/flexengine/
     correctness/     # logits parity / paged attention
     integration/     # multi-request / API / cancellation
     stress/          # OOM / preemption / repeated reuse
-  src/benchmarks/
+  src/flexengine/benchmarking/
     traces/          # seeded prompt distributions
     clients/         # AIPerf configs / custom replay
     micro/           # eager vs graph / attention kernels
-    profile_engine.py
-    profile_kernel.py
-  src/experiments/
+    profiling/engine.py
+    profiling/kernel.py
+  src/flexengine/experiments/
     config/           # immutable scenario configs
     results/          # JSONL / CSV / profiler reports
     analysis/         # statistical summaries and plots
@@ -375,7 +375,7 @@ src/flexengine/
 
 每次 run 输出 `run_metadata.json`（git commit、driver、CUDA、torch、transformers、triton、GPU 型号/显存、模型 ID+revision、precision、SLO、随机种子、启动 flags、温度/时钟）以及 `requests.jsonl`（请求 id、长度、arrival、queue、first_token、last_token、finish_reason、tokens、error、SLO）和 `steps.jsonl`（step、scheduled token、batch composition、KV occupancy、graph_hit、GPU event time）。
 
-固定的 `analyze.py` 从 CSV/JSONL 再生所有图，CI 至少运行 CPU scheduler 单测、GPU correctness smoke（有 GPU Runner 时）、文档与格式检查。不要把 3080 Ti 性能门限硬写进没有同型号 GPU 的 GitHub Actions 公共 Runner；使用可选本地 GPU regression job。
+固定的 `analysis/plots.py` 从 CSV/JSONL 再生所有图，CI 至少运行 CPU scheduler 单测、GPU correctness sanity（有 GPU Runner 时）、文档与格式检查。不要把 3080 Ti 性能门限硬写进没有同型号 GPU 的 GitHub Actions 公共 Runner；使用可选本地 GPU regression job。
 
 ## 9. 里程碑、优先级与风险控制
 

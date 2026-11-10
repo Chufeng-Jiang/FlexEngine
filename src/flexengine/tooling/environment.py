@@ -1,12 +1,15 @@
 """Export both reproducible Python environments and host/GPU metadata."""
 from __future__ import annotations
 
+import argparse
 import json
 import platform
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+from flexengine.observability.environment import collect_environment
+
+ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / "data" / "environment"
 
 
@@ -19,9 +22,16 @@ def freeze(python: Path, destination: Path) -> int:
     text = command(str(python), "-m", "pip", "freeze")
     destination.write_text(text + "\n", encoding="utf8")
     return len(text.splitlines())
+def check_main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--device", default="cuda:0")
+    args = parser.parse_args()
+    print(json.dumps(collect_environment(args.device), indent=2, default=str))
 
 
-def main() -> None:
+
+
+def export_main() -> None:
     OUTPUT.mkdir(exist_ok=True)
     main_count = freeze(ROOT / ".venv" / "bin" / "python", OUTPUT / "requirements-flexengine.txt")
     vllm_count = freeze(ROOT / ".venv-vllm" / "bin" / "python", OUTPUT / "requirements-vllm.txt")
@@ -56,4 +66,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    export_main()

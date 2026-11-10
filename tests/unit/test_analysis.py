@@ -1,7 +1,7 @@
 import json
 import math
 
-from experiments.analyze_proposal import collect
+from flexengine.experiments.analysis.proposal import collect
 
 
 def write_run(root, experiment, name, repetition, requests_per_sec):

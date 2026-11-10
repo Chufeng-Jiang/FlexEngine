@@ -33,7 +33,7 @@
 
 **Files:**
 - Create: `src/flexengine/observability/environment.py`
-- Create: `src/scripts/check_environment.py`
+- Create: `src/flexengine/tooling/environment.py`
 - Create: `docs/DOD_STATUS.md`
 - Modify: `src/flexengine/observability/traces.py`
 - Test: `tests/unit/test_environment.py`
@@ -89,9 +89,9 @@
 
 **Files:**
 - Create: `data/config/proposal_matrix.json`
-- Create: `src/experiments/run_matrix.py`
+- Create: `src/flexengine/experiments/matrix.py`
 - Create: `tests/unit/test_experiment_matrix.py`
-- Modify: `src/benchmarks/replay.py`
+- Modify: `src/flexengine/benchmarking/runner.py`
 
 **Interfaces:**
 - Produces: `load_matrix(path) -> list[RunSpec]`, `run_id(spec, repeat) -> str`, atomic completion marker and matched request-trace export/import.
@@ -106,8 +106,8 @@
 
 **Files:**
 - Modify: `src/flexengine/config.py`
-- Modify: `src/scripts/run_server.py`
-- Modify: `src/experiments/run_matrix.py`
+- Modify: `src/flexengine/cli/server.py`
+- Modify: `src/flexengine/experiments/matrix.py`
 - Test: `tests/unit/test_config.py`
 - Test: `tests/unit/test_experiment_matrix.py`
 
@@ -117,7 +117,7 @@
 - [ ] Add failing tests for CLI overrides and `matched_kv_blocks(base_blocks, base_size, candidate_size) -> int`.
 - [ ] Implement validated controls and persist them in metadata.
 - [ ] Verify equal KV-pool byte calculations for block sizes 8/16/32.
-- [ ] Run a small E1-E4 smoke matrix before long measurements.
+- [ ] Run a small E1-E4 sanity matrix before long measurements.
 
 ### Task 6: Prefix Cache allocator and index
 
@@ -186,13 +186,13 @@
 - [ ] Add failing end-to-end parity tests for active counts 1/2/3/4/5/8, non-contiguous block tables and fallback.
 - [ ] Refactor decode inputs into stable graph-compatible tensors without changing eager semantics.
 - [ ] Integrate capture/replay after warmup and emit graph hit/fallback metadata.
-- [ ] Run GPU parity, generation and a short server smoke test for graph on/off.
+- [ ] Run GPU parity, generation and a short server sanity test for graph on/off.
 
 ### Task 10: Nsight baseline and bottleneck report
 
 **Files:**
-- Modify: `src/benchmarks/profile_engine.py`
-- Modify: `src/benchmarks/profile_kernel.py`
+- Modify: `src/flexengine/benchmarking/profiling/engine.py`
+- Modify: `src/flexengine/benchmarking/profiling/kernel.py`
 - Create: `docs/NSIGHT_BASELINE.md`
 - Create: `results/profiling/README.md`
 
@@ -218,16 +218,16 @@
 - [ ] Add failing tests for FP16 GQA, block sizes 8/16/32, non-contiguous pages, context boundaries and unsupported fallback.
 - [ ] Implement a fused decode kernel consuming block tables directly.
 - [ ] Compare output/top-1/logit errors with materialized and blockwise references.
-- [ ] Run NCU on the kernel and matched E2E before/after smoke measurements.
+- [ ] Run NCU on the kernel and matched E2E before/after sanity measurements.
 - [ ] Keep or report the optimization based on correctness; report negative E2E results honestly.
 
 ### Task 12: E5-E6 and complete E1-E6 execution
 
 **Files:**
 - Modify: `data/config/proposal_matrix.json`
-- Modify: `src/experiments/run_matrix.py`
-- Modify: `src/experiments/analyze.py`
-- Create: `src/experiments/analyze_repeats.py`
+- Modify: `src/flexengine/experiments/matrix.py`
+- Modify: `src/flexengine/experiments/analyze.py`
+- Create: `src/flexengine/experiments/analyze_repeats.py`
 - Test: `tests/unit/test_analysis.py`
 
 **Interfaces:**
@@ -242,8 +242,8 @@
 ### Task 13: Isolated vLLM comparison
 
 **Files:**
-- Create: `src/benchmarks/vllm/README.md`
-- Create: `src/benchmarks/vllm/run_server.sh`
+- Create: `src/flexengine/benchmarking/baselines/vllm/README.md`
+- Create: `src/flexengine/benchmarking/baselines/vllm/run_server.sh`
 - Create: `data/config/vllm_matched.json`
 
 **Interfaces:**

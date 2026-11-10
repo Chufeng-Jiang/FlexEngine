@@ -8,17 +8,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-try:
-    from experiments.common import add_workload_trace, runs_complete, stop_process, wait_ready
-except ModuleNotFoundError:
-    from common import add_workload_trace, runs_complete, stop_process, wait_ready
 from flexengine.config import matched_kv_blocks
+from flexengine.experiments.artifacts import add_workload_trace, runs_complete, stop_process, wait_ready
+from flexengine.experiments.matrix import load_matrix, spec_dict
 
-try:
-    from experiments.run_matrix import load_matrix, spec_dict
-except ModuleNotFoundError:
-    from run_matrix import load_matrix, spec_dict
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MODEL_REVISIONS = {
     "Qwen/Qwen2.5-0.5B-Instruct": "7ae557604adf67be50417f59c2c2f167def9a775",
     "Qwen/Qwen2.5-1.5B-Instruct": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
@@ -30,7 +24,7 @@ MODEL_REVISIONS = {
 def server_command(spec, trace_dir: Path) -> list[str]:
     blocks = matched_kv_blocks(1024, 16, spec.block_size)
     command = [
-        sys.executable, "-m", "scripts.run_server", "--model", spec.model,
+        sys.executable, "-m", "flexengine.cli.server", "--model", spec.model,
         "--policy", spec.policy, "--attention", spec.attention,
         "--trace-dir", str(trace_dir), "--token-budget", str(spec.token_budget),
         "--block-size", str(spec.block_size), "--num-blocks", str(blocks),
@@ -69,7 +63,7 @@ def run_spec(spec, output_root: Path, repetitions: int, requests: int, max_outpu
                 if (run_dir / "summary.json").exists():
                     continue
                 command = [
-                    sys.executable, "-m", "benchmarks.replay", "--model", spec.model,
+                    sys.executable, "-m", "flexengine.benchmarking.runner", "--model", spec.model,
                     "--workload", spec.workload, "--prefix-ratio", str(spec.prefix_ratio),
                     "--concurrency", str(spec.concurrency), "--requests", str(requests),
                     "--max-output-tokens", str(max_output_tokens), "--seed", "42",

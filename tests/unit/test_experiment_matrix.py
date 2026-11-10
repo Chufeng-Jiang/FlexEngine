@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from benchmarks.replay import build_or_load_workload, load_workload_trace, save_workload_trace
-from experiments.run_matrix import RunSpec, is_complete, load_matrix, mark_complete, run_id
+from flexengine.benchmarking.runner import build_or_load_workload, load_workload_trace, save_workload_trace
+from flexengine.experiments.matrix import RunSpec, is_complete, load_matrix, mark_complete, run_id
 
 
 def test_proposal_matrix_contains_controlled_e1_to_e6_subsets():

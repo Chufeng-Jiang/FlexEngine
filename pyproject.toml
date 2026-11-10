@@ -21,15 +21,14 @@ dependencies = [
 
 [project.scripts]
 flexengine = "flexengine.cli:main"
-flexengine-serve = "scripts.run_server:main"
-flexengine-smoke = "scripts.smoke_client:main"
-flexengine-check-env = "scripts.check_environment:main"
-flexengine-export-env = "scripts.export_environment:main"
-flexengine-benchmark = "benchmarks.replay:main"
-flexengine-run-proposal = "experiments.run_proposal:main"
-flexengine-run-upgrade = "experiments.run_upgrade:main"
-flexengine-analyze-proposal = "experiments.analyze_proposal:main"
-flexengine-analyze-upgrade = "experiments.analyze_upgrade:main"
+flexengine-serve = "flexengine.cli.server:main"
+flexengine-check-env = "flexengine.tooling.environment:check_main"
+flexengine-export-env = "flexengine.tooling.environment:export_main"
+flexengine-benchmark = "flexengine.benchmarking.runner:main"
+flexengine-run-proposal = "flexengine.experiments.runners.proposal:main"
+flexengine-run-upgrade = "flexengine.experiments.runners.upgrade:main"
+flexengine-analyze-proposal = "flexengine.experiments.analysis.proposal:main"
+flexengine-analyze-upgrade = "flexengine.experiments.analysis.upgrade:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.7", "numpy>=1.24", "matplotlib>=3.7", "requests>=2.31"]
@@ -38,7 +37,7 @@ flashinfer = ["flashinfer-python>=0.2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["flexengine*", "benchmarks*", "experiments*", "scripts*"]
+include = ["flexengine*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

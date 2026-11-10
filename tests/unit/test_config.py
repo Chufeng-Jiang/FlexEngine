@@ -1,7 +1,7 @@
 import os
 
+from flexengine.cli.server import apply_args, build_parser
 from flexengine.config import matched_kv_blocks
-from scripts.run_server import apply_args, build_parser
 
 
 def test_matched_kv_blocks_preserves_pool_bytes():

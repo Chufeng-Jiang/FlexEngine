@@ -80,7 +80,7 @@ This honestly quantifies the remaining production-performance gap.
 The complete English guide is `README.md`; Chinese quick start is
 `docs/QUICK_START_CN.md`. Frozen package exports and machine/model metadata are
 under `data/environment/`. Reproduction commands cover installation, Docker, parity,
-generation, service smoke, E1-E6, artifact audit, Nsight and vLLM.
+generation, service sanity, E1-E6, artifact audit, Nsight and vLLM.
 
 ## Threats to validity
 
@@ -127,7 +127,7 @@ an end-to-end engine speedup. Cold compilation, dispatch, synchronization,
 prefill, GEMM and scheduler work explain why kernel and system measurements
 differ; the fair experiment uses SDPA prefill for both fused decode backends.
 
-Final verification after the upgrade: **102 passed, 4 skipped**, with repository
+Final verification after the upgrade: **103 passed, 4 skipped**, with repository
 Ruff clean. Environment exports include FlashInfer 0.7.3 and the validated
 PyTorch/CUDA stack. The formal upgrade aggregate is
 `results/upgrade_20261109/aggregate.csv`; raw traces and diagnostic

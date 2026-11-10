@@ -18,9 +18,9 @@ from pathlib import Path
 import httpx
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
-from benchmarks.benchmark_stats import summarize_requests, validate_sample_counts
+from flexengine.benchmarking.statistics import summarize_requests, validate_sample_counts
 
 
 def save_workload_trace(path: Path, identity: str, workload: list[dict]) -> None:

@@ -9,12 +9,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-try:
-    from experiments.common import add_workload_trace, stop_process, wait_ready
-except ModuleNotFoundError:
-    from common import add_workload_trace, stop_process, wait_ready
+from flexengine.experiments.artifacts import add_workload_trace, stop_process, wait_ready
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 REVISION = "7ae557604adf67be50417f59c2c2f167def9a775"
 
 
@@ -45,7 +42,7 @@ def run_spec(spec: dict, output_root: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
     (destination / "spec.json").write_text(json.dumps(spec, indent=2), encoding="utf8")
     command = [
-        sys.executable, "-m", "scripts.run_server", "--model", spec["model"], "--model-revision", REVISION,
+        sys.executable, "-m", "flexengine.cli.server", "--model", spec["model"], "--model-revision", REVISION,
         "--policy", spec["policy"], "--attention", spec["attention"],
         "--token-budget", str(spec["token_budget"]), "--prefill-chunk-size", str(spec["prefill_chunk_size"]),
         "--trace-dir", str(destination / "engine-trace"),
@@ -65,7 +62,7 @@ def run_spec(spec: dict, output_root: Path) -> None:
                 if (run_dir / "summary.json").exists():
                     continue
                 replay = [
-                    sys.executable, "-m", "benchmarks.replay", "--model", spec["model"],
+                    sys.executable, "-m", "flexengine.benchmarking.runner", "--model", spec["model"],
                     "--mode", spec["mode"], "--rate", str(spec["rate"]), "--concurrency", str(spec["concurrency"]),
                     "--workload", spec["workload"], "--prefix-ratio", str(spec["prefix_ratio"]),
                     "--requests", str(spec["measured_requests"]), "--warmup-requests", str(spec["warmup_requests"]),

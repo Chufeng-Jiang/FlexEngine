@@ -1,7 +1,7 @@
 """Run a deterministic in-process workload for NVTX/CUDA-event profiling.
 
 nsys profile --trace=cuda,nvtx,osrt --sample=none -o /tmp/flex_profile \\
-  python src/benchmarks/profile_engine.py --steps 100 --batch-size 4
+  python -m flexengine.benchmarking.profiling.engine --steps 100 --batch-size 4
 """
 import argparse
 import json

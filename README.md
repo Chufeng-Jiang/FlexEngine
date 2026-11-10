@@ -69,9 +69,10 @@ src/flexengine/
   execution/cuda_graph.py          fixed-bucket capture/replay manager
   sampling/sampler.py              greedy/top-k/temperature sampling
   observability/                   environment, JSONL, NVTX, Prometheus
-src/benchmarks/                    HTTP, engine and kernel benchmarks
-src/experiments/                   matrix runner, aggregation and strict audit
-src/scripts/                       installable CLI implementations
+src/flexengine/benchmarking/                    HTTP, engine and kernel benchmarks
+src/flexengine/experiments/                   matrix runner, aggregation and strict audit
+src/flexengine/cli/                unified command dispatch and server entry
+src/flexengine/tooling/            environment inspection and export
 tests/                             CPU, integration and real-GPU correctness
 data/config/                       benchmark and experiment configuration
 data/environment/                  frozen package exports and system metadata
@@ -135,7 +136,7 @@ docker run --rm --gpus all -p 8000:8000 \
 
 ```bash
 CUDA_VISIBLE_DEVICES= python -m pytest -q
-# Validated: 75 passed, 11 skipped
+# Validated after source-layout refactor: 103 passed, 4 skipped
 
 python -m ruff check flexengine scripts benchmarks experiments tests
 # Validated: All checks passed
@@ -166,7 +167,7 @@ python -m pytest -q \
 | 0.5B | ` Paris. It is the largest city in` | 1,017,782,272 B | 1,128,267,776 B |
 | 1.5B | ` Paris. The capital of France is also` | 3,126,618,112 B | 3,401,580,544 B |
 
-## Start the service and smoke test
+## Start and validate the service
 
 Terminal A:
 
@@ -184,7 +185,6 @@ flexengine serve \
 Terminal B:
 
 ```bash
-flexengine smoke
 curl -s http://127.0.0.1:8000/healthz
 curl -s http://127.0.0.1:8000/metrics
 ```
@@ -239,7 +239,7 @@ flexengine run-proposal --repetitions 3 --requests 8 \
   --max-output-tokens 32 --output results/proposal_20261108
 flexengine analyze-proposal \
   --input results/proposal_20261108 --repetitions 3
-python src/experiments/audit_proposal.py \
+python -m flexengine.experiments.analysis.audit \
   --input results/proposal_20261108 \
   --configurations 39 --repetitions 3 --requests 8
 # Validated: 39 configurations, 936 completed requests, errors: []
@@ -281,7 +281,7 @@ vLLM runs in `.venv-vllm`, never in FlexEngine's environment. It uses vLLM 0.33.
 | FlexEngine E1 0.5B c4 | 1.054 ± 0.058 | 743.3 | 137.0 | 24/24 |
 | vLLM 0.33.0 | 14.779 ± 1.209 | 131.2 ± 111.9 | 14.6 ± 7.9 | 24/24 |
 
-See `src/benchmarks/vllm/README.md`; raw summaries are in `results/vllm_20261109/`. This quantifies the gap to a production engine; it is not a claim that FlexEngine outperforms vLLM.
+See `src/flexengine/benchmarking/baselines/vllm/README.md`; raw summaries are in `results/vllm_20261109/`. This quantifies the gap to a production engine; it is not a claim that FlexEngine outperforms vLLM.
 
 ## Profiling reproduction
 
@@ -290,13 +290,13 @@ See `docs/NSIGHT_BASELINE.md` for the full report and commands.
 ```bash
 nsys profile --force-overwrite=true --trace=cuda,nvtx,osrt --sample=none \
   --stats=true -o results/profiling/nsys_baseline \
-  .venv/bin/python src/benchmarks/profile_engine.py --steps 8 --batch-size 2 \
+  python -m flexengine.benchmarking.profiling.engine --steps 8 --batch-size 2 \
   --attention blockwise --trace-dir results/profiling/trace_baseline
 
 /usr/local/cuda/bin/ncu --set basic --nvtx \
   --nvtx-include attention_profile/ --force-overwrite \
   -o results/profiling/ncu_triton \
-  .venv/bin/python src/benchmarks/profile_kernel.py \
+  python -m flexengine.benchmarking.profiling.kernel \
   --backend triton --seq-len 512 --iters 1
 ```
 

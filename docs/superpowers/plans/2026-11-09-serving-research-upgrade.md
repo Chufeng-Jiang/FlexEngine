@@ -31,8 +31,8 @@
 ### Task 1: Warm benchmark statistics
 
 **Files:**
-- Modify: `src/benchmarks/replay.py`
-- Create: `src/benchmarks/statistics.py`
+- Modify: `src/flexengine/benchmarking/runner.py`
+- Create: `src/flexengine/benchmarking/statistics.py`
 - Test: `tests/unit/test_benchmark_statistics.py`
 
 **Interfaces:**
@@ -48,7 +48,7 @@
 **Files:**
 - Modify: `src/flexengine/config.py`
 - Modify: `src/flexengine/scheduler/policies.py`
-- Modify: `src/scripts/run_server.py`
+- Modify: `src/flexengine/cli/server.py`
 - Test: `tests/unit/test_scheduler.py`
 - Test: `tests/unit/test_config.py`
 
@@ -115,8 +115,8 @@
 
 **Files:**
 - Create: `data/config/upgrade_matrix.json`
-- Create: `src/experiments/run_upgrade.py`
-- Create: `src/experiments/analyze_upgrade.py`
+- Create: `src/flexengine/experiments/runners/upgrade.py`
+- Create: `src/flexengine/experiments/analysis/upgrade.py`
 - Create: `results/profiling/profile_upgrade.sh`
 - Modify: `README.md`
 - Modify: `docs/FINAL_REPORT.md`
@@ -129,7 +129,7 @@
 - [ ] Run the warm matrix with 20 warmup plus 200 measured requests and one repetition (user override on 2026-11-09).
 - [ ] Capture Nsight Systems for materialized/Triton/FlashInfer with graph off/on and Nsight Compute for attention kernels.
 - [ ] Generate tables/plots and document cold start separately from steady state.
-- [ ] Run full pytest, Ruff, artifact audit, and reproduction smoke test.
+- [ ] Run full pytest, Ruff, artifact audit, and reproduction sanity test.
 
 ## Self-review
 

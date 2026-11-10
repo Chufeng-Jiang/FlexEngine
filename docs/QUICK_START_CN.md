@@ -40,7 +40,7 @@ FLEX_KV_NUM_BLOCKS=512 FLEX_MAX_MODEL_LEN=2048 \
   --trace-dir results/local_3080ti
 
 # Terminal B：测试 HTTP SSE
-flexengine smoke
+curl -s http://127.0.0.1:8000/healthz
 ```
 
 如果 GPU 显存不足，先将 `FLEX_KV_NUM_BLOCKS=512` 降为 `256`；如果速度非常慢（blockwise PyTorch 按页运行很多小 Kernel），换成 `--attention materialized` 运行对照。
@@ -51,7 +51,7 @@ flexengine smoke
 flexengine benchmark --workload w1 --concurrency 2 --requests 20 \
   --output results/w1_c2
 cp results/local_3080ti/requests.jsonl results/w1_c2/requests.jsonl
-python src/experiments/analyze.py results/w1_c2 \
+python -m flexengine.experiments.analysis.plots results/w1_c2 \
   --output results/analysis --plots
 ```
 
@@ -61,12 +61,12 @@ python src/experiments/analyze.py results/w1_c2 \
 
 ```bash
 nsys profile --trace=cuda,nvtx,osrt --sample=none -o flex_nsys \
-  python src/benchmarks/profile_engine.py --steps 80 --batch-size 4
+  python -m flexengine.benchmarking.profiling.engine --steps 80 --batch-size 4
 
-python src/benchmarks/profile_pytorch.py --steps 12 --batch-size 2
+python -m flexengine.benchmarking.profiling.pytorch --steps 12 --batch-size 2
 
 ncu --set full --target-processes all -o flex_ncu \
-  python src/benchmarks/profile_kernel.py --backend blockwise --seq-len 512
+  python -m flexengine.benchmarking.profiling.kernel --backend blockwise --seq-len 512
 ```
 
 ## 完整实现范围说明

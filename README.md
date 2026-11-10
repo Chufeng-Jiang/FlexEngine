@@ -366,11 +366,11 @@ Artifacts:
 Reproduce the upgraded matrix:
 
 ```bash
-flexengine run-upgrade
-flexengine analyze-upgrade \
+flexengine run-warm-benchmarks
+flexengine analyze-warm-benchmarks \
   --input results/upgrade_20261109 --repetitions 1
 ```
 
 The runner is resumable: an existing `run-N/summary.json` is skipped. To obtain
 publishable uncertainty estimates, change `repetitions` to at least 5 in
-`data/config/upgrade_matrix.json` and run on an otherwise idle GPU.
+`data/config/warm_benchmark_matrix.json` and run on an otherwise idle GPU.

@@ -114,10 +114,10 @@
 ### Task 6: Research matrix, profiling, and report
 
 **Files:**
-- Create: `data/config/upgrade_matrix.json`
-- Create: `src/flexengine/research/experiments/upgrade.py`
-- Create: `src/flexengine/research/experiments/upgrade.py`
-- Create: `results/profiling/profile_upgrade.sh`
+- Create: `data/config/warm_benchmark_matrix.json`
+- Create: `src/flexengine/research/experiments/runner.py`
+- Create: `src/flexengine/research/analysis/results.py`
+- Create: `results/profiling/profile_warm_benchmark.sh`
 - Modify: `README.md`
 - Modify: `docs/FINAL_REPORT.md`
 

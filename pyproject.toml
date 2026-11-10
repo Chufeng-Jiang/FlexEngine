@@ -25,10 +25,10 @@ flexengine-serve = "flexengine.serving.cli.server:main"
 flexengine-check-env = "flexengine.operations.tooling.environment:check_main"
 flexengine-export-env = "flexengine.operations.tooling.environment:export_main"
 flexengine-benchmark = "flexengine.research.benchmark.runner:main"
-flexengine-run-proposal = "flexengine.research.experiments.proposal:main"
-flexengine-run-upgrade = "flexengine.research.experiments.upgrade:main"
-flexengine-analyze-proposal = "flexengine.research.analysis.proposal:main"
-flexengine-analyze-upgrade = "flexengine.research.analysis.upgrade:main"
+flexengine-run-proposal = "flexengine.research.experiments.runner:main"
+flexengine-run-warm-benchmarks = "flexengine.research.experiments.runner:warm_main"
+flexengine-analyze-proposal = "flexengine.research.analysis.results:main"
+flexengine-analyze-warm-benchmarks = "flexengine.research.analysis.results:warm_main"
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.7", "numpy>=1.24", "matplotlib>=3.7", "requests>=2.31"]

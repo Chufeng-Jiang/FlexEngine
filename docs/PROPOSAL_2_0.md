@@ -358,8 +358,8 @@ src/flexengine/
       baselines/      # isolated production-engine comparisons
     profiling/        # engine, kernel and PyTorch profilers
     experiments/
-      proposal.py     # Proposal matrix orchestration
-      upgrade.py      # warm upgrade matrix orchestration
+      runner.py       # Proposal and warm benchmark orchestration
+
     analysis/         # aggregation, plots and audit
   data/               # immutable scenario configs and environment snapshots
   results/            # JSONL, CSV and profiler reports

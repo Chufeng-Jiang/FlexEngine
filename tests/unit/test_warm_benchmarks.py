@@ -1,12 +1,12 @@
 import json
 from pathlib import Path
 
-from flexengine.research.analysis.upgrade import aggregate_runs
-from flexengine.research.experiments.upgrade import load_upgrade_matrix
+from flexengine.research.analysis.results import collect_warm
+from flexengine.research.experiments.runner import load_warm_matrix
 
 
-def test_upgrade_matrix_has_unique_warm_ablation_specs():
-    specs = load_upgrade_matrix(Path("data/config/upgrade_matrix.json"))
+def test_warm_matrix_has_unique_ablation_specs():
+    specs = load_warm_matrix(Path("data/config/warm_benchmark_matrix.json"))
 
     assert len(specs) >= 15
     assert len({spec["name"] for spec in specs}) == len(specs)
@@ -32,7 +32,7 @@ def test_upgrade_analyzer_reports_ci_and_p99(tmp_path):
             "failures": 0,
         }), encoding="utf8")
 
-    rows = aggregate_runs(tmp_path, repetitions=5)
+    rows = collect_warm(tmp_path, repetitions=5)
 
     assert rows[0]["requests_per_sec_mean"] == 11.0
     assert rows[0]["requests_per_sec_ci95_low"] < 11.0 < rows[0]["requests_per_sec_ci95_high"]

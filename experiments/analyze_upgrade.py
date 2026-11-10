@@ -5,7 +5,13 @@ import argparse
 import csv
 import json
 import statistics
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 
 from benchmarks.benchmark_stats import bootstrap_ci
 
@@ -15,6 +21,8 @@ METRICS = ("requests_per_sec", "goodput_requests_per_sec", "ttft_p99_ms", "tpot_
 def aggregate_runs(root: Path, repetitions: int = 1) -> list[dict]:
     rows = []
     for config_dir in sorted(path for path in root.iterdir() if path.is_dir()):
+        if "-aborted" in config_dir.name:
+            continue
         summaries = []
         for repetition in range(1, repetitions + 1):
             path = config_dir / f"run-{repetition}" / "summary.json"

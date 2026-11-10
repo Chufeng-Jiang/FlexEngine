@@ -8,7 +8,7 @@
     "Qwen/Qwen2.5-1.5B-Instruct": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
   },
   "package_counts": {
-    "flexengine": 90,
+    "flexengine": 107,
     "vllm": 199
   },
   "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",

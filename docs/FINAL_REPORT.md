@@ -95,3 +95,40 @@ larger experiments can extend these conclusions without replacing them.
 All mandatory Proposal software and evidence items are complete. FlexEngine is
 a correct, auditable research runtime with measured advanced optimizations, not
 a production replacement for vLLM.
+## Post-Proposal warm serving upgrade (2026-11-09)
+
+The research follow-up is complete. It adds adaptive decode reservation and
+bounded prefill, phase-level scheduler/executor/GPU/CUDA-Graph telemetry,
+prefix lookup/hit/reused-token/eviction counters, and an optional FlashInfer
+Tensor-Core paged-decode backend with Qwen2.5 GQA support.
+
+The warm matrix used 20 warm-up plus 200 measured requests for each of 25
+configurations. All 5,000 measured requests completed successfully. Each
+configuration was run once at the user's direction, so reported values are
+single-run point estimates rather than cross-run confidence intervals.
+
+Key findings:
+
+- Fair warm attention throughput was effectively tied: materialized 0.992,
+  Triton 1.000, and FlashInfer 0.998 req/s. Triton delivered the strongest
+  Goodput (0.620 req/s).
+- CUDA Graph with Triton raised SLO pass rate from 64.5% to 98.5% and reduced
+  TTFT P99 from 1,682 ms to 824 ms, while throughput stayed near 1 req/s.
+- Adaptive scheduling achieved 91% SLO pass at arrival rate 0.5, 26% at 1.0,
+  and 0% at 1.5. This identifies the service-quality saturation boundary.
+- Token budget 256 was the best tested operating point for the rate-1 W4 load,
+  with 27.5% SLO pass versus 18.5%, 20.0%, and 26.5% for 64, 128, and 512.
+- Prefix reuse at 75% sharing did not improve throughput in this single run.
+  TPOT P99 improved from 207 ms to 188 ms, while SLO pass changed 48% to 43%.
+
+The earlier 62.7x Triton figure remains valid only for the isolated kernel
+microbenchmark against the Python blockwise reference. It is not presented as
+an end-to-end engine speedup. Cold compilation, dispatch, synchronization,
+prefill, GEMM and scheduler work explain why kernel and system measurements
+differ; the fair experiment uses SDPA prefill for both fused decode backends.
+
+Final verification after the upgrade: **102 passed, 4 skipped**, with repository
+Ruff clean. Environment exports include FlashInfer 0.7.3 and the validated
+PyTorch/CUDA stack. The formal upgrade aggregate is
+`experiments/results/upgrade_20261109/aggregate.csv`; raw traces and diagnostic
+aborted runs are retained alongside it for auditability.

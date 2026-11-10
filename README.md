@@ -319,3 +319,49 @@ Captured artifacts include `nsys_baseline.nsys-rep`, `ncu_blockwise.ncu-rep`, an
 ## Intended use
 
 FlexEngine is an educational/research runtime and portfolio-quality systems artifact. Review security, licensing, model terms, and operational safeguards before adapting it for real users.
+## 2026 warm serving upgrade
+
+A second, warm benchmark campaign was completed on 2026-11-09 after adding an
+adaptive scheduler, causal phase telemetry, optional FlashInfer paged decode,
+fair fused-backend prefill, and prefix-cache effectiveness counters.
+
+Methodology: 20 warm-up requests followed by 200 measured W4 requests per
+configuration, Poisson arrivals, concurrency 8, 32 output tokens, and one
+independent run per configuration. The matrix contains 25 configurations and
+completed 5,000/5,000 measured requests with zero client failures. Because the
+user selected one repetition, the aggregate values are point estimates; there
+is no meaningful across-run confidence interval.
+
+| Study | Key result |
+|---|---|
+| Attention | materialized 0.992, Triton 1.000, FlashInfer 0.998 req/s |
+| Attention quality | Triton had the best Goodput: 0.620 req/s |
+| CUDA Graph + Triton | SLO pass rate 64.5% -> 98.5%; TTFT P99 1682 -> 824 ms |
+| Adaptive scheduler | SLO pass 91% at rate 0.5, 26% at 1.0, 0% at 1.5 |
+| Token budget | 256 was best in this run: 27.5% SLO pass |
+| Prefix cache, W5 75% | throughput unchanged; TPOT P99 207 -> 188 ms, SLO 48% -> 43% |
+
+The earlier 62.7x result is a kernel microbenchmark against Python blockwise
+attention, not an end-to-end engine speedup. In the fair warm end-to-end test,
+all three attention backends were near 1 req/s; Triton improved service quality
+rather than aggregate throughput. Diagnostic aborted runs are retained for
+root-cause evidence but excluded from the formal aggregate.
+
+Artifacts:
+
+- `experiments/results/upgrade_20261109/aggregate.csv`
+- per-configuration `run-1/summary.json`, client JSONL, server logs, and engine traces
+- `docs/superpowers/specs/2026-11-09-serving-research-upgrade-design.md`
+- `docs/superpowers/plans/2026-11-09-serving-research-upgrade.md`
+
+Reproduce the upgraded matrix:
+
+```bash
+.venv/bin/python experiments/run_upgrade.py
+.venv/bin/python experiments/analyze_upgrade.py \
+  --input experiments/results/upgrade_20261109 --repetitions 1
+```
+
+The runner is resumable: an existing `run-N/summary.json` is skipped. To obtain
+publishable uncertainty estimates, change `repetitions` to at least 5 in
+`experiments/config/upgrade_matrix.json` and run on an otherwise idle GPU.

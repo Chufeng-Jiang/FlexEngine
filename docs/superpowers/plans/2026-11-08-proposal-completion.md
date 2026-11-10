@@ -91,7 +91,7 @@
 - Create: `data/config/proposal_matrix.json`
 - Create: `src/flexengine/research/experiments/`
 - Create: `tests/unit/test_experiment_matrix.py`
-- Modify: `src/flexengine/research/benchmarking/`
+- Modify: `src/flexengine/research/benchmark/`
 
 **Interfaces:**
 - Produces: `load_matrix(path) -> list[RunSpec]`, `run_id(spec, repeat) -> str`, atomic completion marker and matched request-trace export/import.
@@ -191,8 +191,8 @@
 ### Task 10: Nsight baseline and bottleneck report
 
 **Files:**
-- Modify: `src/flexengine/research/benchmarking/profiling/engine.py`
-- Modify: `src/flexengine/research/benchmarking/profiling/kernel.py`
+- Modify: `src/flexengine/research/profiling/engine.py`
+- Modify: `src/flexengine/research/profiling/kernel.py`
 - Create: `docs/NSIGHT_BASELINE.md`
 - Create: `results/profiling/README.md`
 
@@ -226,7 +226,8 @@
 **Files:**
 - Modify: `data/config/proposal_matrix.json`
 - Modify: `src/flexengine/research/experiments/`
-- Modify: `src/flexengine/research/experiments/- Create: `src/flexengine/research/experiments/- Test: `tests/unit/test_analysis.py`
+- Modify: `src/flexengine/research/analysis/`
+- Test: `tests/unit/test_analysis.py`
 
 **Interfaces:**
 - Consumes all runtime features and RunSpec.
@@ -240,8 +241,8 @@
 ### Task 13: Isolated vLLM comparison
 
 **Files:**
-- Create: `src/flexengine/research/benchmarking/vllm/README.md`
-- Create: `src/flexengine/research/benchmarking/vllm/run_server.sh`
+- Create: `src/flexengine/research/benchmark/baselines/vllm/README.md`
+- Create: `src/flexengine/research/benchmark/baselines/vllm/run_server.sh`
 - Create: `data/config/vllm_matched.json`
 
 **Interfaces:**

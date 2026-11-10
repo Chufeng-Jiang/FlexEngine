@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from flexengine.research.benchmarking.runner import (
+from flexengine.research.benchmark.runner import (
     build_or_load_workload,
     load_workload_trace,
     save_workload_trace,

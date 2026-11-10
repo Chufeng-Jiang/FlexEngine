@@ -74,8 +74,10 @@ src/flexengine/
     observability/                    metrics, tracing and NVTX
     tooling/                          environment inspection and export
   research/
-    benchmarking/                     workloads, statistics and profiling
-    experiments/                      runners, analysis and auditing
+    benchmark/                        workload replay, baselines and statistics
+    profiling/                        Nsight, PyTorch and kernel profiling
+    experiments/                      experiment matrices and orchestration
+    analysis/                         aggregation, plots and result auditing
 tests/                                CPU, integration and real-GPU correctness
 data/config/                          experiment configuration
 data/environment/                     reproducible environment snapshots
@@ -242,7 +244,7 @@ flexengine run-proposal --repetitions 3 --requests 8 \
   --max-output-tokens 32 --output results/proposal_20261108
 flexengine analyze-proposal \
   --input results/proposal_20261108 --repetitions 3
-python -m flexengine.research.experiments.analysis.audit \
+python -m flexengine.research.analysis.audit \
   --input results/proposal_20261108 \
   --configurations 39 --repetitions 3 --requests 8
 # Validated: 39 configurations, 936 completed requests, errors: []
@@ -284,7 +286,7 @@ vLLM runs in `.venv-vllm`, never in FlexEngine's environment. It uses vLLM 0.33.
 | FlexEngine E1 0.5B c4 | 1.054 ± 0.058 | 743.3 | 137.0 | 24/24 |
 | vLLM 0.33.0 | 14.779 ± 1.209 | 131.2 ± 111.9 | 14.6 ± 7.9 | 24/24 |
 
-See `src/flexengine/research/benchmarking/vllm/README.md`; raw summaries are in `results/vllm_20261109/`. This quantifies the gap to a production engine; it is not a claim that FlexEngine outperforms vLLM.
+See `src/flexengine/research/benchmark/baselines/vllm/README.md`; raw summaries are in `results/vllm_20261109/`. This quantifies the gap to a production engine; it is not a claim that FlexEngine outperforms vLLM.
 
 ## Profiling reproduction
 
@@ -293,13 +295,13 @@ See `docs/NSIGHT_BASELINE.md` for the full report and commands.
 ```bash
 nsys profile --force-overwrite=true --trace=cuda,nvtx,osrt --sample=none \
   --stats=true -o results/profiling/nsys_baseline \
-  python -m flexengine.research.benchmarking.profiling.engine --steps 8 --batch-size 2 \
+  python -m flexengine.research.profiling.engine --steps 8 --batch-size 2 \
   --attention blockwise --trace-dir results/profiling/trace_baseline
 
 /usr/local/cuda/bin/ncu --set basic --nvtx \
   --nvtx-include attention_profile/ --force-overwrite \
   -o results/profiling/ncu_triton \
-  python -m flexengine.research.benchmarking.profiling.kernel \
+  python -m flexengine.research.profiling.kernel \
   --backend triton --seq-len 512 --iters 1
 ```
 

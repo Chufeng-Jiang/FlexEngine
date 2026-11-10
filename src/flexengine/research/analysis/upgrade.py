@@ -13,7 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 
-from flexengine.research.benchmarking.statistics import bootstrap_ci
+from flexengine.research.benchmark.statistics import bootstrap_ci
 
 METRICS = ("requests_per_sec", "goodput_requests_per_sec", "ttft_p99_ms", "tpot_p99_ms")
 

@@ -16,7 +16,7 @@ greedy sampling, request count, concurrency, seed and saved request trace. See
 Start the isolated server:
 
 ```bash
-bash src/flexengine/research/benchmarking/vllm/run_server.sh
+bash src/flexengine/research/benchmark/baselines/vllm/run_server.sh
 ```
 
 For each of three repetitions run:

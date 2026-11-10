@@ -8,18 +8,18 @@ decode-first scheduling and batch size 2.
 ```bash
 nsys profile --force-overwrite=true --trace=cuda,nvtx,osrt --sample=none \
   --stats=true -o results/profiling/nsys_baseline \
-  python -m flexengine.research.benchmarking.profiling.engine \
+  python -m flexengine.research.profiling.engine \
   --steps 8 --batch-size 2 --attention blockwise \
   --trace-dir results/profiling/trace_baseline
 
 /usr/local/cuda/bin/ncu --set basic --launch-count 1 --force-overwrite \
   -o results/profiling/ncu_blockwise \
-  python -m flexengine.research.benchmarking.profiling.kernel \
+  python -m flexengine.research.profiling.kernel \
   --backend blockwise --seq-len 128 --iters 1
 
 /usr/local/cuda/bin/ncu --set basic --nvtx --nvtx-include attention_profile/ \
   --force-overwrite -o results/profiling/ncu_triton \
-  python -m flexengine.research.benchmarking.profiling.kernel \
+  python -m flexengine.research.profiling.kernel \
   --backend triton --seq-len 512 --iters 1
 ```
 

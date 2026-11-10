@@ -31,8 +31,8 @@
 ### Task 1: Warm benchmark statistics
 
 **Files:**
-- Modify: `src/flexengine/research/benchmarking/`
-- Create: `src/flexengine/research/benchmarking/`
+- Modify: `src/flexengine/research/benchmark/`
+- Create: `src/flexengine/research/benchmark/`
 - Test: `tests/unit/test_benchmark_statistics.py`
 
 **Interfaces:**

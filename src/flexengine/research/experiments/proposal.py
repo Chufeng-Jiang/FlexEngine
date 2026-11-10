@@ -63,7 +63,7 @@ def run_spec(spec, output_root: Path, repetitions: int, requests: int, max_outpu
                 if (run_dir / "summary.json").exists():
                     continue
                 command = [
-                    sys.executable, "-m", "flexengine.research.benchmarking.runner", "--model", spec.model,
+                    sys.executable, "-m", "flexengine.research.benchmark.runner", "--model", spec.model,
                     "--workload", spec.workload, "--prefix-ratio", str(spec.prefix_ratio),
                     "--concurrency", str(spec.concurrency), "--requests", str(requests),
                     "--max-output-tokens", str(max_output_tokens), "--seed", "42",

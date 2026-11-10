@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from flexengine.research.experiments.analysis.upgrade import aggregate_runs
-from flexengine.research.experiments.runners.upgrade import load_upgrade_matrix
+from flexengine.research.analysis.upgrade import aggregate_runs
+from flexengine.research.experiments.upgrade import load_upgrade_matrix
 
 
 def test_upgrade_matrix_has_unique_warm_ablation_specs():

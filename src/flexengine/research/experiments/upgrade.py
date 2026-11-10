@@ -62,7 +62,7 @@ def run_spec(spec: dict, output_root: Path) -> None:
                 if (run_dir / "summary.json").exists():
                     continue
                 replay = [
-                    sys.executable, "-m", "flexengine.research.benchmarking.runner", "--model", spec["model"],
+                    sys.executable, "-m", "flexengine.research.benchmark.runner", "--model", spec["model"],
                     "--mode", spec["mode"], "--rate", str(spec["rate"]), "--concurrency", str(spec["concurrency"]),
                     "--workload", spec["workload"], "--prefix-ratio", str(spec["prefix_ratio"]),
                     "--requests", str(spec["measured_requests"]), "--warmup-requests", str(spec["warmup_requests"]),

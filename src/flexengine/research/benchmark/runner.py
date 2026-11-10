@@ -20,7 +20,7 @@ import httpx
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
-from flexengine.research.benchmarking.statistics import summarize_requests, validate_sample_counts
+from flexengine.research.benchmark.statistics import summarize_requests, validate_sample_counts
 
 
 def save_workload_trace(path: Path, identity: str, workload: list[dict]) -> None:

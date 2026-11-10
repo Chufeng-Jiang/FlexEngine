@@ -51,7 +51,7 @@ curl -s http://127.0.0.1:8000/healthz
 flexengine benchmark --workload w1 --concurrency 2 --requests 20 \
   --output results/w1_c2
 cp results/local_3080ti/requests.jsonl results/w1_c2/requests.jsonl
-python -m flexengine.research.experiments.analysis.plots results/w1_c2 \
+python -m flexengine.research.analysis.plots results/w1_c2 \
   --output results/analysis --plots
 ```
 
@@ -61,12 +61,12 @@ python -m flexengine.research.experiments.analysis.plots results/w1_c2 \
 
 ```bash
 nsys profile --trace=cuda,nvtx,osrt --sample=none -o flex_nsys \
-  python -m flexengine.research.benchmarking.profiling.engine --steps 80 --batch-size 4
+  python -m flexengine.research.profiling.engine --steps 80 --batch-size 4
 
-python -m flexengine.research.benchmarking.profiling.pytorch --steps 12 --batch-size 2
+python -m flexengine.research.profiling.pytorch --steps 12 --batch-size 2
 
 ncu --set full --target-processes all -o flex_ncu \
-  python -m flexengine.research.benchmarking.profiling.kernel --backend blockwise --seq-len 512
+  python -m flexengine.research.profiling.kernel --backend blockwise --seq-len 512
 ```
 
 ## 完整实现范围说明

@@ -7,11 +7,11 @@ from collections.abc import Sequence
 
 COMMANDS = {
     "serve": ("flexengine.serving.cli.server", "main", "Start the OpenAI-compatible inference server"),
-    "benchmark": ("flexengine.research.benchmarking.runner", "main", "Replay an HTTP benchmark workload"),
-    "run-proposal": ("flexengine.research.experiments.runners.proposal", "main", "Run the Proposal experiment matrix"),
-    "analyze-proposal": ("flexengine.research.experiments.analysis.proposal", "main", "Aggregate Proposal results"),
-    "run-upgrade": ("flexengine.research.experiments.runners.upgrade", "main", "Run the warm upgrade matrix"),
-    "analyze-upgrade": ("flexengine.research.experiments.analysis.upgrade", "main", "Aggregate warm upgrade results"),
+    "benchmark": ("flexengine.research.benchmark.runner", "main", "Replay an HTTP benchmark workload"),
+    "run-proposal": ("flexengine.research.experiments.proposal", "main", "Run the Proposal experiment matrix"),
+    "analyze-proposal": ("flexengine.research.analysis.proposal", "main", "Aggregate Proposal results"),
+    "run-upgrade": ("flexengine.research.experiments.upgrade", "main", "Run the warm upgrade matrix"),
+    "analyze-upgrade": ("flexengine.research.analysis.upgrade", "main", "Aggregate warm upgrade results"),
     "check-env": ("flexengine.operations.tooling.environment", "check_main", "Validate the CUDA environment"),
     "export-env": ("flexengine.operations.tooling.environment", "export_main", "Export reproducible environments"),
 }

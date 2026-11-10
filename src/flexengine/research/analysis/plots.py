@@ -1,6 +1,6 @@
 """Reconstruct summary tables/figures from one or more benchmark folders.
 
-Pass folders produced by `flexengine.research.benchmarking.runner`. Requires matplotlib.
+Pass folders produced by `flexengine.research.benchmark.runner`. Requires matplotlib.
 Can also aggregate server-side `requests.jsonl` when --server-traces is set.
 Never inserts fabricated experimental data.
 """

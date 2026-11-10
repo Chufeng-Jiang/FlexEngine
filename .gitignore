@@ -46,6 +46,8 @@ weights/
 wandb/
 runs/
 lightning_logs/
+.superpowers/
+
 
 # Datasets and outputs
 data/

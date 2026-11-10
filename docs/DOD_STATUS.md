@@ -3,9 +3,9 @@
 | Requirement | Status | Evidence |
 |---|---|---|
 | Two official Qwen2.5 dense models generate on one GPU | Complete | 0.5B/1.5B parity: `tests/gpu/test_hf_parity.py`; complete generation and KV reclamation: `tests/gpu/test_real_generation.py` |
-| Own Scheduler, KV Cache and Model Executor | Complete | `flexengine/scheduler/`, `flexengine/kv_cache/`, `flexengine/models/qwen2.py` |
-| Continuous batching and chunked prefill | Complete | `flexengine/runtime.py`, integration tests |
-| Block Table consumed by Attention | Complete | `flexengine/attention/paged.py`, attention tests |
+| Own Scheduler, KV Cache and Model Executor | Complete | `src/flexengine/scheduler/`, `src/flexengine/kv_cache/`, `src/flexengine/models/qwen2.py` |
+| Continuous batching and chunked prefill | Complete | `src/flexengine/runtime.py`, integration tests |
+| Block Table consumed by Attention | Complete | `src/flexengine/attention/paged.py`, attention tests |
 | SSE, cancellation, backpressure, preemption and cleanup tests | Complete | `tests/integration/test_failures.py`, `test_runtime.py`, `test_api.py`, `tests/unit/test_allocator.py` cover F01-F07 and block invariants |
 | FCFS/decode-first/SLO-aware controlled comparison | Complete | E2 in `proposal_20261108/aggregate.csv` |
 | TTFT, ITL, TPOT, P99, Goodput and VRAM artifacts | Complete | E1-E6 raw traces, aggregate report, generation peak memory |

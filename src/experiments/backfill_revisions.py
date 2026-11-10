@@ -13,7 +13,7 @@ REVISIONS = {
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="experiments/results/proposal_20261108")
+    parser.add_argument("--input", default="results/proposal_20261108")
     args = parser.parse_args()
     changed = 0
     for path in Path(args.input).glob("E*/**/engine-trace/run_metadata.json"):

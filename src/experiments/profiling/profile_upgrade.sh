@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-mkdir -p experiments/profiling/upgrade
+mkdir -p results/profiling/upgrade
 nsys profile --trace=cuda,nvtx,osrt --sample=none --force-overwrite=true \
-  -o experiments/profiling/upgrade/steady_state "$@"
+  -o results/profiling/upgrade/steady_state "$@"

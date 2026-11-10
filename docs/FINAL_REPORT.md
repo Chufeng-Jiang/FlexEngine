@@ -49,7 +49,7 @@ Representative mean request throughput:
 The materialized CUDA Graph comparison produced a **2.74×** throughput increase.
 Prefix caching at 75% sharing reduced mean TTFT p95 from 948.8 ms to 790.5 ms.
 The full table with sample standard deviations is
-`experiments/results/proposal_20261108/REPORT.md` and `aggregate.csv`.
+`results/proposal_20261108/REPORT.md` and `aggregate.csv`.
 
 ## Profiling and optimization
 
@@ -62,7 +62,7 @@ At 512 context tokens the microbenchmark measured:
 
 The fused kernel is about **62.7×** faster than the blockwise research baseline
 in this microbenchmark. Nsight raw reports are retained under
-`experiments/profiling/`, including the final `_paged_decode_kernel` NCU capture.
+`results/profiling/`, including the final `_paged_decode_kernel` NCU capture.
 
 ## Matched vLLM comparison
 
@@ -79,7 +79,7 @@ This honestly quantifies the remaining production-performance gap.
 
 The complete English guide is `README.md`; Chinese quick start is
 `docs/QUICK_START_CN.md`. Frozen package exports and machine/model metadata are
-under `environment/`. Reproduction commands cover installation, Docker, parity,
+under `data/environment/`. Reproduction commands cover installation, Docker, parity,
 generation, service smoke, E1-E6, artifact audit, Nsight and vLLM.
 
 ## Threats to validity
@@ -130,5 +130,5 @@ differ; the fair experiment uses SDPA prefill for both fused decode backends.
 Final verification after the upgrade: **102 passed, 4 skipped**, with repository
 Ruff clean. Environment exports include FlashInfer 0.7.3 and the validated
 PyTorch/CUDA stack. The formal upgrade aggregate is
-`experiments/results/upgrade_20261109/aggregate.csv`; raw traces and diagnostic
+`results/upgrade_20261109/aggregate.csv`; raw traces and diagnostic
 aborted runs are retained alongside it for auditability.

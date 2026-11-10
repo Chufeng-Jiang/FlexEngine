@@ -1,6 +1,6 @@
 """Reconstruct summary tables/figures from one or more benchmark folders.
 
-Pass folders produced by `benchmarks/replay.py`. Requires matplotlib.
+Pass folders produced by `src/benchmarks/replay.py`. Requires matplotlib.
 Can also aggregate server-side `requests.jsonl` when --server-traces is set.
 Never inserts fabricated experimental data.
 """
@@ -58,7 +58,7 @@ def analyze(run_dir: Path):
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("runs",nargs="+",help="One or more benchmark run folders")
-    p.add_argument("--output",default="experiments/results/analysis")
+    p.add_argument("--output",default="results/analysis")
     p.add_argument("--plots", action="store_true")
     args=p.parse_args()
     out=Path(args.output); out.mkdir(parents=True,exist_ok=True)

@@ -7,25 +7,25 @@ decode-first scheduling and batch size 2.
 
 ```bash
 nsys profile --force-overwrite=true --trace=cuda,nvtx,osrt --sample=none \
-  --stats=true -o experiments/profiling/nsys_baseline \
-  .venv/bin/python benchmarks/profile_engine.py \
+  --stats=true -o results/profiling/nsys_baseline \
+  .venv/bin/python src/benchmarks/profile_engine.py \
   --steps 8 --batch-size 2 --attention blockwise \
-  --trace-dir experiments/profiling/trace_baseline
+  --trace-dir results/profiling/trace_baseline
 
 /usr/local/cuda/bin/ncu --set basic --launch-count 1 --force-overwrite \
-  -o experiments/profiling/ncu_blockwise \
-  .venv/bin/python benchmarks/profile_kernel.py \
+  -o results/profiling/ncu_blockwise \
+  .venv/bin/python src/benchmarks/profile_kernel.py \
   --backend blockwise --seq-len 128 --iters 1
 
 /usr/local/cuda/bin/ncu --set basic --nvtx --nvtx-include attention_profile/ \
-  --force-overwrite -o experiments/profiling/ncu_triton \
-  .venv/bin/python benchmarks/profile_kernel.py \
+  --force-overwrite -o results/profiling/ncu_triton \
+  .venv/bin/python src/benchmarks/profile_kernel.py \
   --backend triton --seq-len 512 --iters 1
 ```
 
-Raw reports are `experiments/profiling/nsys_baseline.nsys-rep`,
-`experiments/profiling/ncu_blockwise.ncu-rep` and
-`experiments/profiling/ncu_triton.ncu-rep`.
+Raw reports are `results/profiling/nsys_baseline.nsys-rep`,
+`results/profiling/ncu_blockwise.ncu-rep` and
+`results/profiling/ncu_triton.ncu-rep`.
 
 ## Observed baseline
 

@@ -49,6 +49,10 @@ lightning_logs/
 
 # Datasets and outputs
 data/
+!data/
+!data/config/
+!data/config/**
+!data/environment/**
 datasets/
 outputs/
 results/

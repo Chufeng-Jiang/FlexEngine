@@ -10,5 +10,5 @@
   "repetitions": 3,
   "url": "http://127.0.0.1:8001/v1/completions",
   "trace_identity": "w1-prefix0-n8-out32",
-  "workload_trace": "experiments/results/proposal_20261108/workloads/w1-prefix0-n8-out32.json"
+  "workload_trace": "results/proposal_20261108/workloads/w1-prefix0-n8-out32.json"
 }

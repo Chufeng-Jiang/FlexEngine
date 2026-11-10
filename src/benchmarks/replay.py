@@ -18,7 +18,7 @@ from pathlib import Path
 import httpx
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from benchmarks.benchmark_stats import summarize_requests, validate_sample_counts
 
@@ -249,7 +249,7 @@ def main():
     p.add_argument("--ttft-slo-ms", type=float, default=2000)
     p.add_argument("--itl-slo-ms", type=float, default=200)
     p.add_argument("--timeout", type=float, default=300)
-    p.add_argument("--output", default="experiments/results/latest")
+    p.add_argument("--output", default="results/latest")
     args = p.parse_args()
     if min(args.requests, args.concurrency, args.rate, args.timeout) <= 0:
         p.error("requests, concurrency, rate, timeout must be positive")

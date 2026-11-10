@@ -8,7 +8,7 @@ from experiments.run_matrix import RunSpec, is_complete, load_matrix, mark_compl
 
 
 def test_proposal_matrix_contains_controlled_e1_to_e6_subsets():
-    specs = load_matrix(Path("experiments/config/proposal_matrix.json"))
+    specs = load_matrix(Path("data/config/proposal_matrix.json"))
     counts = {}
     for spec in specs:
         counts[spec.experiment] = counts.get(spec.experiment, 0) + 1

@@ -14,7 +14,7 @@ try:
 except ModuleNotFoundError:
     from common import add_workload_trace, stop_process, wait_ready
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 REVISION = "7ae557604adf67be50417f59c2c2f167def9a775"
 
 
@@ -45,14 +45,16 @@ def run_spec(spec: dict, output_root: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
     (destination / "spec.json").write_text(json.dumps(spec, indent=2), encoding="utf8")
     command = [
-        sys.executable, "scripts/run_server.py", "--model", spec["model"], "--model-revision", REVISION,
+        sys.executable, "-m", "scripts.run_server", "--model", spec["model"], "--model-revision", REVISION,
         "--policy", spec["policy"], "--attention", spec["attention"],
         "--token-budget", str(spec["token_budget"]), "--prefill-chunk-size", str(spec["prefill_chunk_size"]),
         "--trace-dir", str(destination / "engine-trace"),
         "--prefix-cache" if spec["prefix_cache"] else "--no-prefix-cache",
         "--cuda-graph" if spec["cuda_graph"] else "--no-cuda-graph",
     ]
-    with (destination / "server.log").open("a", encoding="utf8") as log:
+    log_path = ROOT / "logs" / "upgrade" / spec["name"] / "server.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("a", encoding="utf8") as log:
         process = subprocess.Popen(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, env=os.environ.copy())
         try:
             wait_ready(process)
@@ -63,7 +65,7 @@ def run_spec(spec: dict, output_root: Path) -> None:
                 if (run_dir / "summary.json").exists():
                     continue
                 replay = [
-                    sys.executable, "benchmarks/replay.py", "--model", spec["model"],
+                    sys.executable, "-m", "benchmarks.replay", "--model", spec["model"],
                     "--mode", spec["mode"], "--rate", str(spec["rate"]), "--concurrency", str(spec["concurrency"]),
                     "--workload", spec["workload"], "--prefix-ratio", str(spec["prefix_ratio"]),
                     "--requests", str(spec["measured_requests"]), "--warmup-requests", str(spec["warmup_requests"]),
@@ -77,8 +79,8 @@ def run_spec(spec: dict, output_root: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--matrix", default="experiments/config/upgrade_matrix.json")
-    parser.add_argument("--output", default="experiments/results/upgrade_20261109")
+    parser.add_argument("--matrix", default="data/config/upgrade_matrix.json")
+    parser.add_argument("--output", default="results/upgrade_20261109")
     parser.add_argument("--studies", nargs="*", default=[])
     args = parser.parse_args()
     specs = load_upgrade_matrix(Path(args.matrix))

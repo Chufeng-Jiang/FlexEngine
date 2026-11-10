@@ -18,7 +18,7 @@ einops==0.8.2
 fastapi==0.162.2
 filelock==4.2.9
 flashinfer-python==0.7.3
--e git+https://github.com/Chufeng-Jiang/FlexEngine.git@7a1916572337948240e5e502333eacce65e3a637#egg=flexengine_runtime
+-e git+https://github.com/Chufeng-Jiang/FlexEngine.git@d23ba7808cdebaaf3ff1aa0a9858d6d20a21a259#egg=flexengine_runtime
 fonttools==4.68.0
 fsspec==2026.9.0
 h11==0.16.0

@@ -36,11 +36,11 @@ FLEX_RUN_REAL_MODEL_TESTS=1 FLEX_MODEL=Qwen/Qwen2.5-1.5B-Instruct \
 
 # Terminal A：启动服务器
 FLEX_KV_NUM_BLOCKS=512 FLEX_MAX_MODEL_LEN=2048 \
-  python scripts/run_server.py --policy decode_first --attention blockwise \
-  --trace-dir experiments/results/local_3080ti
+  flexengine serve --policy decode_first --attention blockwise \
+  --trace-dir results/local_3080ti
 
 # Terminal B：测试 HTTP SSE
-python scripts/smoke_client.py
+flexengine smoke
 ```
 
 如果 GPU 显存不足，先将 `FLEX_KV_NUM_BLOCKS=512` 降为 `256`；如果速度非常慢（blockwise PyTorch 按页运行很多小 Kernel），换成 `--attention materialized` 运行对照。
@@ -48,27 +48,27 @@ python scripts/smoke_client.py
 ## 第四步：测性能并生成报告
 
 ```bash
-python benchmarks/replay.py --workload w1 --concurrency 2 --requests 20 \
-  --output experiments/results/w1_c2
-cp experiments/results/local_3080ti/requests.jsonl experiments/results/w1_c2/requests.jsonl
-python experiments/analyze.py experiments/results/w1_c2 \
-  --output experiments/results/analysis --plots
+flexengine benchmark --workload w1 --concurrency 2 --requests 20 \
+  --output results/w1_c2
+cp results/local_3080ti/requests.jsonl results/w1_c2/requests.jsonl
+python src/experiments/analyze.py results/w1_c2 \
+  --output results/analysis --plots
 ```
 
-从 `experiments/results/analysis/RESULTS.md` 和 CSV 获取汇总结果。正式论文/面试不要用唯一一轮数据下性能结论，至少做 3–5 次重复，并准备 Nsight 截图。
+从 `results/analysis/RESULTS.md` 和 CSV 获取汇总结果。正式论文/面试不要用唯一一轮数据下性能结论，至少做 3–5 次重复，并准备 Nsight 截图。
 
 ## 第五步：Profiling
 
 ```bash
 nsys profile --trace=cuda,nvtx,osrt --sample=none -o flex_nsys \
-  python benchmarks/profile_engine.py --steps 80 --batch-size 4
+  python src/benchmarks/profile_engine.py --steps 80 --batch-size 4
 
-python benchmarks/profile_pytorch.py --steps 12 --batch-size 2
+python src/benchmarks/profile_pytorch.py --steps 12 --batch-size 2
 
 ncu --set full --target-processes all -o flex_ncu \
-  python benchmarks/profile_kernel.py --backend blockwise --seq-len 512
+  python src/benchmarks/profile_kernel.py --backend blockwise --seq-len 512
 ```
 
 ## 完整实现范围说明
 
-当前实现了完整的自研 Qwen2.5 eager forward 路径、Scheduler、分页 KV 读写、SSE 和 benchmark，但 **完整 decoder CUDA Graph、Prefix Caching、真正 fused Triton Paged Attention** 仍是后续研究工作。初版优先追求可复现的 correctness 和模块透明性，不承诺超越 vLLM。
+当前实现已包含自研 Qwen2.5 eager forward、Scheduler、Paged KV、Prefix Cache、Triton/FlashInfer Paged Decode、CUDA Graph、SSE、Benchmark 和 Profiling。它是可复现的研究系统，不宣称替代或超越 vLLM。代码位于 `src/`，配置与环境快照位于 `data/`，日志位于 `logs/`，实验产物位于 `results/`。

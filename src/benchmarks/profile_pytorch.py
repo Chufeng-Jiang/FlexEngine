@@ -17,7 +17,7 @@ def main():
     p.add_argument("--model",default="Qwen/Qwen2.5-0.5B-Instruct")
     p.add_argument("--steps",type=int,default=12)
     p.add_argument("--batch-size",type=int,default=2)
-    p.add_argument("--output",default="experiments/results/pytorch_trace.json")
+    p.add_argument("--output",default="results/pytorch_trace.json")
     args=p.parse_args()
     conf=EngineConfig(model=args.model,max_num_seqs=args.batch_size,
                       max_num_batched_tokens=128,trace_steps=False)

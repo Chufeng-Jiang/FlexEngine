@@ -282,12 +282,12 @@ NVIDIA GPU 性能岗位明确列出 Nsight Systems、Nsight Compute、PyTorch Pr
 ```bash
 nsys profile --trace=cuda,nvtx,osrt --sample=none \
   --cuda-graph-trace=graph -o results/nsys/mixed_decode \
-  python benchmarks/profile_engine.py --model Qwen/Qwen2.5-0.5B-Instruct \
+  python src/benchmarks/profile_engine.py --model Qwen/Qwen2.5-0.5B-Instruct \
   --workload mixed --steps 200 --batch-size 4
 
 ncu --set full --target-processes all \
   -o results/ncu/paged_attention \
-  python benchmarks/profile_kernel.py --kernel paged_attention --batch-size 4
+  python src/benchmarks/profile_kernel.py --kernel paged_attention --batch-size 4
 ```
 
 **采样规则：** `nsys` 只抓稳定的少量代表性 step；`ncu` 更重，单独运行 kernel case；正式 QPS/latency 由不带 profiler 的服务实例测量。不要使用 `ncu` 下的 end-to-end 时间当正式性能结果。
@@ -336,8 +336,8 @@ aiperf profile \
 ### 8.2 推荐仓库结构
 
 ```text
-flexengine/
-  flexengine/
+src/flexengine/
+  src/flexengine/
     api/             # OpenAI-compatible endpoints / SSE
     scheduler/       # policies / admission / lifecycle
     kv_cache/        # blocks / prefix / preemption
@@ -351,13 +351,13 @@ flexengine/
     correctness/     # logits parity / paged attention
     integration/     # multi-request / API / cancellation
     stress/          # OOM / preemption / repeated reuse
-  benchmarks/
+  src/benchmarks/
     traces/          # seeded prompt distributions
     clients/         # AIPerf configs / custom replay
     micro/           # eager vs graph / attention kernels
     profile_engine.py
     profile_kernel.py
-  experiments/
+  src/experiments/
     config/           # immutable scenario configs
     results/          # JSONL / CSV / profiler reports
     analysis/         # statistical summaries and plots

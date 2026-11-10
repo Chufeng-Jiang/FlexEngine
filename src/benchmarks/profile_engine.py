@@ -1,7 +1,7 @@
 """Run a deterministic in-process workload for NVTX/CUDA-event profiling.
 
 nsys profile --trace=cuda,nvtx,osrt --sample=none -o /tmp/flex_profile \\
-  python benchmarks/profile_engine.py --steps 100 --batch-size 4
+  python src/benchmarks/profile_engine.py --steps 100 --batch-size 4
 """
 import argparse
 import json
@@ -20,7 +20,7 @@ def main():
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--policy", choices=["fcfs", "decode_first", "slo_aware"], default="decode_first")
     p.add_argument("--attention", choices=["blockwise", "materialized", "triton"], default="blockwise")
-    p.add_argument("--trace-dir", default="experiments/results/profile")
+    p.add_argument("--trace-dir", default="results/profile")
     p.add_argument("--cuda-graph", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--prefix-cache", action=argparse.BooleanOptionalAction, default=False)
     args = p.parse_args()

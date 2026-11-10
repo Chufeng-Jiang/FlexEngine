@@ -3,8 +3,8 @@
 FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
 WORKDIR /app
 COPY pyproject.toml README.md ./
-COPY flexengine ./flexengine
-COPY scripts ./scripts
+COPY src ./src
+ENV PYTHONPATH=/app/src
 RUN pip install --no-cache-dir .
 ENV FLEX_DEVICE=cuda:0
 EXPOSE 8000

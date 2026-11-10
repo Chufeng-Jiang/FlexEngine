@@ -58,7 +58,7 @@ The GPU worker is the sole owner of model execution. HTTP threads communicate th
 ### Source map
 
 ```text
-flexengine/
+src/flexengine/
   api/server.py                    FastAPI, SSE, cancellation, health, metrics
   runtime.py                       admission, batching, preemption, graph dispatch
   scheduler/{state,policies}.py    lifecycle and three scheduling policies
@@ -69,15 +69,19 @@ flexengine/
   execution/cuda_graph.py          fixed-bucket capture/replay manager
   sampling/sampler.py              greedy/top-k/temperature sampling
   observability/                   environment, JSONL, NVTX, Prometheus
-benchmarks/                         HTTP, engine and kernel benchmarks
-experiments/                        matrix runner, aggregation and strict audit
-tests/                              CPU, integration and real-GPU correctness
-environment/                        frozen package exports and system metadata
+src/benchmarks/                    HTTP, engine and kernel benchmarks
+src/experiments/                   matrix runner, aggregation and strict audit
+src/scripts/                       installable CLI implementations
+tests/                             CPU, integration and real-GPU correctness
+data/config/                       benchmark and experiment configuration
+data/environment/                  frozen package exports and system metadata
+logs/                              service logs, separate from measurements
+results/                           JSONL, CSV, plots and profiler artifacts
 ```
 
 ## Validated environment
 
-Exact exports: [`environment/system.json`](environment/system.json), [`environment/requirements-flexengine.txt`](environment/requirements-flexengine.txt), and [`environment/requirements-vllm.txt`](environment/requirements-vllm.txt).
+Exact exports: [`data/environment/system.json`](data/environment/system.json), [`data/environment/requirements-flexengine.txt`](data/environment/requirements-flexengine.txt), and [`data/environment/requirements-vllm.txt`](data/environment/requirements-vllm.txt).
 
 | Component | Validated value |
 |---|---|
@@ -98,7 +102,7 @@ Pinned model snapshots:
 Regenerate the exports:
 
 ```bash
-.venv/bin/python scripts/export_environment.py
+flexengine export-env
 ```
 
 ## Installation
@@ -113,10 +117,10 @@ python -m pip install -e '.[dev]'
 
 nvidia-smi
 python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
-python scripts/check_environment.py --device cuda:0
+flexengine check-env --device cuda:0
 ```
 
-For the exact validated package set, install `environment/requirements-flexengine.txt` into a fresh environment, then install this project editable.
+For the exact validated package set, install `data/environment/requirements-flexengine.txt` into a fresh environment, then install this project editable.
 
 ### Docker
 
@@ -169,18 +173,18 @@ Terminal A:
 ```bash
 source .venv/bin/activate
 PYTORCH_ALLOC_CONF=expandable_segments:True \
-python scripts/run_server.py \
+flexengine serve \
   --model Qwen/Qwen2.5-0.5B-Instruct \
   --model-revision 7ae557604adf67be50417f59c2c2f167def9a775 \
   --policy decode_first --attention triton \
   --prefix-cache --cuda-graph \
-  --trace-dir experiments/results/local
+  --trace-dir results/local
 ```
 
 Terminal B:
 
 ```bash
-python scripts/smoke_client.py
+flexengine smoke
 curl -s http://127.0.0.1:8000/healthz
 curl -s http://127.0.0.1:8000/metrics
 ```
@@ -197,7 +201,7 @@ The server listens on localhost and has no authentication or TLS. Do not expose 
 
 ## Configuration
 
-Use `python scripts/run_server.py --help`. Important environment variables:
+Use `flexengine serve --help`. Important environment variables:
 
 | Variable | Default | Meaning |
 |---|---:|---|
@@ -223,20 +227,20 @@ The audited matrix contains 39 controlled E1-E6 configurations. Each has three s
 
 Artifacts:
 
-- `experiments/results/proposal_20261108/E*/...`
-- `experiments/results/proposal_20261108/aggregate.csv`
-- `experiments/results/proposal_20261108/REPORT.md`
-- `experiments/config/proposal_matrix.json`
+- `results/proposal_20261108/E*/...`
+- `results/proposal_20261108/aggregate.csv`
+- `results/proposal_20261108/REPORT.md`
+- `data/config/proposal_matrix.json`
 
 Reproduce and audit:
 
 ```bash
-python experiments/run_proposal.py --repetitions 3 --requests 8 \
-  --max-output-tokens 32 --output experiments/results/proposal_20261108
-python experiments/analyze_proposal.py \
-  --input experiments/results/proposal_20261108 --repetitions 3
-python experiments/audit_proposal.py \
-  --input experiments/results/proposal_20261108 \
+flexengine run-proposal --repetitions 3 --requests 8 \
+  --max-output-tokens 32 --output results/proposal_20261108
+flexengine analyze-proposal \
+  --input results/proposal_20261108 --repetitions 3
+python src/experiments/audit_proposal.py \
+  --input results/proposal_20261108 \
   --configurations 39 --repetitions 3 --requests 8
 # Validated: 39 configurations, 936 completed requests, errors: []
 ```
@@ -277,7 +281,7 @@ vLLM runs in `.venv-vllm`, never in FlexEngine's environment. It uses vLLM 0.33.
 | FlexEngine E1 0.5B c4 | 1.054 ± 0.058 | 743.3 | 137.0 | 24/24 |
 | vLLM 0.33.0 | 14.779 ± 1.209 | 131.2 ± 111.9 | 14.6 ± 7.9 | 24/24 |
 
-See `benchmarks/vllm/README.md`; raw summaries are in `experiments/results/vllm_20261109/`. This quantifies the gap to a production engine; it is not a claim that FlexEngine outperforms vLLM.
+See `src/benchmarks/vllm/README.md`; raw summaries are in `results/vllm_20261109/`. This quantifies the gap to a production engine; it is not a claim that FlexEngine outperforms vLLM.
 
 ## Profiling reproduction
 
@@ -285,14 +289,14 @@ See `docs/NSIGHT_BASELINE.md` for the full report and commands.
 
 ```bash
 nsys profile --force-overwrite=true --trace=cuda,nvtx,osrt --sample=none \
-  --stats=true -o experiments/profiling/nsys_baseline \
-  .venv/bin/python benchmarks/profile_engine.py --steps 8 --batch-size 2 \
-  --attention blockwise --trace-dir experiments/profiling/trace_baseline
+  --stats=true -o results/profiling/nsys_baseline \
+  .venv/bin/python src/benchmarks/profile_engine.py --steps 8 --batch-size 2 \
+  --attention blockwise --trace-dir results/profiling/trace_baseline
 
 /usr/local/cuda/bin/ncu --set basic --nvtx \
   --nvtx-include attention_profile/ --force-overwrite \
-  -o experiments/profiling/ncu_triton \
-  .venv/bin/python benchmarks/profile_kernel.py \
+  -o results/profiling/ncu_triton \
+  .venv/bin/python src/benchmarks/profile_kernel.py \
   --backend triton --seq-len 512 --iters 1
 ```
 
@@ -349,19 +353,19 @@ root-cause evidence but excluded from the formal aggregate.
 
 Artifacts:
 
-- `experiments/results/upgrade_20261109/aggregate.csv`
-- per-configuration `run-1/summary.json`, client JSONL, server logs, and engine traces
+- `results/upgrade_20261109/aggregate.csv`
+- per-configuration `run-1/summary.json`, client JSONL and engine traces; new server logs are under `logs/upgrade/`
 - `docs/superpowers/specs/2026-11-09-serving-research-upgrade-design.md`
 - `docs/superpowers/plans/2026-11-09-serving-research-upgrade.md`
 
 Reproduce the upgraded matrix:
 
 ```bash
-.venv/bin/python experiments/run_upgrade.py
-.venv/bin/python experiments/analyze_upgrade.py \
-  --input experiments/results/upgrade_20261109 --repetitions 1
+flexengine run-upgrade
+flexengine analyze-upgrade \
+  --input results/upgrade_20261109 --repetitions 1
 ```
 
 The runner is resumable: an existing `run-N/summary.json` is skipped. To obtain
 publishable uncertainty estimates, change `repetitions` to at least 5 in
-`experiments/config/upgrade_matrix.json` and run on an otherwise idle GPU.
+`data/config/upgrade_matrix.json` and run on an otherwise idle GPU.

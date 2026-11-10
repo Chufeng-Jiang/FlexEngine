@@ -31,8 +31,8 @@
 ### Task 1: Warm benchmark statistics
 
 **Files:**
-- Modify: `benchmarks/replay.py`
-- Create: `benchmarks/statistics.py`
+- Modify: `src/benchmarks/replay.py`
+- Create: `src/benchmarks/statistics.py`
 - Test: `tests/unit/test_benchmark_statistics.py`
 
 **Interfaces:**
@@ -46,9 +46,9 @@
 ### Task 2: Adaptive decode-reserved scheduler
 
 **Files:**
-- Modify: `flexengine/config.py`
-- Modify: `flexengine/scheduler/policies.py`
-- Modify: `scripts/run_server.py`
+- Modify: `src/flexengine/config.py`
+- Modify: `src/flexengine/scheduler/policies.py`
+- Modify: `src/scripts/run_server.py`
 - Test: `tests/unit/test_scheduler.py`
 - Test: `tests/unit/test_config.py`
 
@@ -63,9 +63,9 @@
 ### Task 3: Phase and graph telemetry
 
 **Files:**
-- Modify: `flexengine/runtime.py`
-- Modify: `flexengine/execution/cuda_graph.py`
-- Modify: `flexengine/observability/metrics.py`
+- Modify: `src/flexengine/runtime.py`
+- Modify: `src/flexengine/execution/cuda_graph.py`
+- Modify: `src/flexengine/observability/metrics.py`
 - Test: `tests/integration/test_runtime.py`
 - Test: `tests/gpu/test_engine_cuda_graph.py`
 
@@ -80,9 +80,9 @@
 ### Task 4: Prefix-cache effectiveness telemetry
 
 **Files:**
-- Modify: `flexengine/kv_cache/prefix.py`
-- Modify: `flexengine/runtime.py`
-- Modify: `flexengine/observability/metrics.py`
+- Modify: `src/flexengine/kv_cache/prefix.py`
+- Modify: `src/flexengine/runtime.py`
+- Modify: `src/flexengine/observability/metrics.py`
 - Test: `tests/unit/test_prefix_cache.py`
 - Test: `tests/integration/test_prefix_runtime.py`
 
@@ -97,9 +97,9 @@
 ### Task 5: Optional FlashInfer backend
 
 **Files:**
-- Create: `flexengine/attention/flashinfer_backend.py`
-- Modify: `flexengine/config.py`
-- Modify: `flexengine/models/qwen2.py`
+- Create: `src/flexengine/attention/flashinfer_backend.py`
+- Modify: `src/flexengine/config.py`
+- Modify: `src/flexengine/models/qwen2.py`
 - Modify: `pyproject.toml`
 - Create: `tests/gpu/test_flashinfer_attention.py`
 
@@ -114,10 +114,10 @@
 ### Task 6: Research matrix, profiling, and report
 
 **Files:**
-- Create: `experiments/config/upgrade_matrix.json`
-- Create: `experiments/run_upgrade.py`
-- Create: `experiments/analyze_upgrade.py`
-- Create: `experiments/profiling/profile_upgrade.sh`
+- Create: `data/config/upgrade_matrix.json`
+- Create: `src/experiments/run_upgrade.py`
+- Create: `src/experiments/analyze_upgrade.py`
+- Create: `results/profiling/profile_upgrade.sh`
 - Modify: `README.md`
 - Modify: `docs/FINAL_REPORT.md`
 

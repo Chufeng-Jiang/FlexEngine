@@ -8,7 +8,7 @@ import statistics
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -48,7 +48,7 @@ def aggregate_runs(root: Path, repetitions: int = 1) -> list[dict]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="experiments/results/upgrade_20261109")
+    parser.add_argument("--input", default="results/upgrade_20261109")
     parser.add_argument("--repetitions", type=int, default=1)
     args = parser.parse_args()
     root = Path(args.input)

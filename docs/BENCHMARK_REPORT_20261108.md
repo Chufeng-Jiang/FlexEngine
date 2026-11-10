@@ -51,8 +51,8 @@ For latency-sensitive use under the configured SLO, concurrency 2 is the defensi
 
 ## Artifacts
 
-- Per-run client data: `experiments/results/w1_*`
+- Per-run client data: `results/w1_*`
 - Per-run server traces: each run directory's `requests.jsonl`
-- Fifteen-run raw table: `experiments/results/analysis_3runs_20261108/aggregate.csv`
-- Three-run mean/standard-deviation table: `experiments/results/analysis_3runs_20261108/average_summary.csv`
-- Generated plots and per-run Markdown: `experiments/results/analysis_3runs_20261108/`
+- Fifteen-run raw table: `results/analysis_3runs_20261108/aggregate.csv`
+- Three-run mean/standard-deviation table: `results/analysis_3runs_20261108/average_summary.csv`
+- Generated plots and per-run Markdown: `results/analysis_3runs_20261108/`

@@ -74,7 +74,7 @@ def write_report(path: Path, rows: list[dict], expected_repetitions: int) -> Non
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="experiments/results/proposal_20261108")
+    parser.add_argument("--input", default="results/proposal_20261108")
     parser.add_argument("--repetitions", type=int, default=3)
     args = parser.parse_args()
     root = Path(args.input)

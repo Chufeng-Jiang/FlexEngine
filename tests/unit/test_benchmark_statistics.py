@@ -59,7 +59,7 @@ def test_invalid_sample_counts_are_rejected(warmup, measured, resamples):
 
 def test_replay_direct_script_entrypoint_loads_local_statistics():
     result = subprocess.run(
-        [sys.executable, "benchmarks/replay.py", "--help"], capture_output=True, text=True, check=False
+        [sys.executable, "src/benchmarks/replay.py", "--help"], capture_output=True, text=True, check=False
     )
 
     assert result.returncode == 0, result.stderr

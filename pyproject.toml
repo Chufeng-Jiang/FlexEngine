@@ -19,16 +19,30 @@ dependencies = [
   "prometheus-client>=0.20",
 ]
 
+[project.scripts]
+flexengine = "flexengine.cli:main"
+flexengine-serve = "scripts.run_server:main"
+flexengine-smoke = "scripts.smoke_client:main"
+flexengine-check-env = "scripts.check_environment:main"
+flexengine-export-env = "scripts.export_environment:main"
+flexengine-benchmark = "benchmarks.replay:main"
+flexengine-run-proposal = "experiments.run_proposal:main"
+flexengine-run-upgrade = "experiments.run_upgrade:main"
+flexengine-analyze-proposal = "experiments.analyze_proposal:main"
+flexengine-analyze-upgrade = "experiments.analyze_upgrade:main"
+
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.7", "numpy>=1.24", "matplotlib>=3.7", "requests>=2.31"]
 triton = ["triton>=3.0"]
 flashinfer = ["flashinfer-python>=0.2"]
 
 [tool.setuptools.packages.find]
-include = ["flexengine*"]
+where = ["src"]
+include = ["flexengine*", "benchmarks*", "experiments*", "scripts*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
 markers = ["gpu: requires a CUDA GPU and possibly Hugging Face model weights"]
 
 [tool.ruff]

@@ -6,7 +6,7 @@ from experiments.run_upgrade import load_upgrade_matrix
 
 
 def test_upgrade_matrix_has_unique_warm_ablation_specs():
-    specs = load_upgrade_matrix(Path("experiments/config/upgrade_matrix.json"))
+    specs = load_upgrade_matrix(Path("data/config/upgrade_matrix.json"))
 
     assert len(specs) >= 15
     assert len({spec["name"] for spec in specs}) == len(specs)

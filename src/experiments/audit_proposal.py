@@ -50,7 +50,7 @@ def audit(root: Path, configurations: int, repetitions: int, requests: int) -> d
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="experiments/results/proposal_20261108")
+    parser.add_argument("--input", default="results/proposal_20261108")
     parser.add_argument("--configurations", type=int, default=39)
     parser.add_argument("--repetitions", type=int, default=3)
     parser.add_argument("--requests", type=int, default=8)

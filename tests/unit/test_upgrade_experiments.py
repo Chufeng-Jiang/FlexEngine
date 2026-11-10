@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from flexengine.experiments.analysis.upgrade import aggregate_runs
-from flexengine.experiments.runners.upgrade import load_upgrade_matrix
+from flexengine.research.experiments.analysis.upgrade import aggregate_runs
+from flexengine.research.experiments.runners.upgrade import load_upgrade_matrix
 
 
 def test_upgrade_matrix_has_unique_warm_ablation_specs():
@@ -41,7 +41,7 @@ def test_upgrade_analyzer_reports_ci_and_p99(tmp_path):
 
 
 def test_common_experiment_artifact_helpers(tmp_path):
-    from flexengine.experiments.artifacts import add_workload_trace, runs_complete
+    from flexengine.research.experiments.artifacts import add_workload_trace, runs_complete
 
     destination = tmp_path / "config"
     assert not runs_complete(destination, 2)

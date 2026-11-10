@@ -11,9 +11,9 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from flexengine.kv_cache.allocator import CacheLayout, PagedKVCache
-from flexengine.models.qwen2 import Qwen2Adapter
-from flexengine.scheduler.policies import Chunk
+from flexengine.engine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.engine.scheduler.policies import Chunk
+from flexengine.inference.models.qwen2 import Qwen2Adapter
 
 
 class FakeRMS(nn.Module):

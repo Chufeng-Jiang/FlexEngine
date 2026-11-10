@@ -7,8 +7,8 @@ import types
 import pytest
 import torch
 
-from flexengine.config import EngineConfig
-from flexengine.runtime import Engine
+from flexengine.engine.config import EngineConfig
+from flexengine.engine.runtime import Engine
 
 
 class TinyTokenizer:

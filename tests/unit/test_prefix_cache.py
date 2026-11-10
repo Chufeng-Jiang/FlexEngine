@@ -1,8 +1,8 @@
 import pytest
 import torch
 
-from flexengine.kv_cache.allocator import CacheLayout, PagedKVCache
-from flexengine.kv_cache.prefix import PrefixCache
+from flexengine.engine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.engine.kv_cache.prefix import PrefixCache
 
 IDENTITY = ("model", "revision", 1, 1, 1, 4, "float32")
 

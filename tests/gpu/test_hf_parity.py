@@ -6,9 +6,9 @@ CPU too; mark GPU tests for CI separation because HF version matrix differs.
 import pytest
 import torch
 
-from flexengine.kv_cache.allocator import CacheLayout, PagedKVCache
-from flexengine.models.qwen2 import Qwen2Adapter
-from flexengine.scheduler.policies import Chunk
+from flexengine.engine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.engine.scheduler.policies import Chunk
+from flexengine.inference.models.qwen2 import Qwen2Adapter
 
 
 @pytest.mark.parametrize("backend", ["blockwise", "materialized"])
@@ -43,7 +43,7 @@ def test_real_qwen_optional():
     import os
     if os.getenv("FLEX_RUN_REAL_MODEL_TESTS") != "1":
         pytest.skip("Set FLEX_RUN_REAL_MODEL_TESTS=1 to load real Qwen2.5 weights")
-    from flexengine.models.qwen2 import Qwen2Adapter
+    from flexengine.inference.models.qwen2 import Qwen2Adapter
     model_id = os.getenv("FLEX_MODEL", "Qwen/Qwen2.5-0.5B-Instruct")
     adapter = Qwen2Adapter.from_pretrained(model_id, device="cuda:0", dtype="float16")
     ids = adapter.tokenizer.encode("What is 2 + 2?", add_special_tokens=False)

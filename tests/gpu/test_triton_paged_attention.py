@@ -1,8 +1,8 @@
 import pytest
 import torch
 
-from flexengine.attention.paged import attention_for_request
-from flexengine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.engine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.inference.attention.paged import attention_for_request
 
 pytestmark = [pytest.mark.gpu, pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA required")]
 

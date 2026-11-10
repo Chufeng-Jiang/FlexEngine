@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from flexengine.api.server import create_app
+from flexengine.serving.api.server import create_app
 
 
 def test_completion_and_stream(engine, conf):

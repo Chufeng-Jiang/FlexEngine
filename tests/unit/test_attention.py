@@ -1,8 +1,8 @@
 import pytest
 import torch
 
-from flexengine.attention.paged import attention_for_request
-from flexengine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.engine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.inference.attention.paged import attention_for_request
 
 
 @pytest.mark.parametrize("length", [1, 3, 4, 5, 15, 16, 17, 34])

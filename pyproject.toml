@@ -20,15 +20,15 @@ dependencies = [
 ]
 
 [project.scripts]
-flexengine = "flexengine.cli:main"
-flexengine-serve = "flexengine.cli.server:main"
-flexengine-check-env = "flexengine.tooling.environment:check_main"
-flexengine-export-env = "flexengine.tooling.environment:export_main"
-flexengine-benchmark = "flexengine.benchmarking.runner:main"
-flexengine-run-proposal = "flexengine.experiments.runners.proposal:main"
-flexengine-run-upgrade = "flexengine.experiments.runners.upgrade:main"
-flexengine-analyze-proposal = "flexengine.experiments.analysis.proposal:main"
-flexengine-analyze-upgrade = "flexengine.experiments.analysis.upgrade:main"
+flexengine = "flexengine.serving.cli:main"
+flexengine-serve = "flexengine.serving.cli.server:main"
+flexengine-check-env = "flexengine.operations.tooling.environment:check_main"
+flexengine-export-env = "flexengine.operations.tooling.environment:export_main"
+flexengine-benchmark = "flexengine.research.benchmarking.runner:main"
+flexengine-run-proposal = "flexengine.research.experiments.runners.proposal:main"
+flexengine-run-upgrade = "flexengine.research.experiments.runners.upgrade:main"
+flexengine-analyze-proposal = "flexengine.research.experiments.analysis.proposal:main"
+flexengine-analyze-upgrade = "flexengine.research.experiments.analysis.upgrade:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.7", "numpy>=1.24", "matplotlib>=3.7", "requests>=2.31"]

@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from flexengine.kv_cache.allocator import CacheExhausted, CacheLayout, PagedKVCache
+from flexengine.engine.kv_cache.allocator import CacheExhausted, CacheLayout, PagedKVCache
 
 
 def make_cache(n=10, block=4):

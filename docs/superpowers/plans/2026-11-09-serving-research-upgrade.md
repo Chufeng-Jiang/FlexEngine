@@ -31,8 +31,8 @@
 ### Task 1: Warm benchmark statistics
 
 **Files:**
-- Modify: `src/flexengine/benchmarking/runner.py`
-- Create: `src/flexengine/benchmarking/statistics.py`
+- Modify: `src/flexengine/research/benchmarking/`
+- Create: `src/flexengine/research/benchmarking/`
 - Test: `tests/unit/test_benchmark_statistics.py`
 
 **Interfaces:**
@@ -46,9 +46,9 @@
 ### Task 2: Adaptive decode-reserved scheduler
 
 **Files:**
-- Modify: `src/flexengine/config.py`
-- Modify: `src/flexengine/scheduler/policies.py`
-- Modify: `src/flexengine/cli/server.py`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/engine/scheduler/`
+- Modify: `src/flexengine/serving/cli/server.py`
 - Test: `tests/unit/test_scheduler.py`
 - Test: `tests/unit/test_config.py`
 
@@ -63,9 +63,9 @@
 ### Task 3: Phase and graph telemetry
 
 **Files:**
-- Modify: `src/flexengine/runtime.py`
-- Modify: `src/flexengine/execution/cuda_graph.py`
-- Modify: `src/flexengine/observability/metrics.py`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/engine/execution/`
+- Modify: `src/flexengine/operations/observability/`
 - Test: `tests/integration/test_runtime.py`
 - Test: `tests/gpu/test_engine_cuda_graph.py`
 
@@ -80,9 +80,9 @@
 ### Task 4: Prefix-cache effectiveness telemetry
 
 **Files:**
-- Modify: `src/flexengine/kv_cache/prefix.py`
-- Modify: `src/flexengine/runtime.py`
-- Modify: `src/flexengine/observability/metrics.py`
+- Modify: `src/flexengine/engine/kv_cache/`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/operations/observability/`
 - Test: `tests/unit/test_prefix_cache.py`
 - Test: `tests/integration/test_prefix_runtime.py`
 
@@ -97,9 +97,9 @@
 ### Task 5: Optional FlashInfer backend
 
 **Files:**
-- Create: `src/flexengine/attention/flashinfer_backend.py`
-- Modify: `src/flexengine/config.py`
-- Modify: `src/flexengine/models/qwen2.py`
+- Create: `src/flexengine/inference/attention/`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/inference/models/qwen2.py`
 - Modify: `pyproject.toml`
 - Create: `tests/gpu/test_flashinfer_attention.py`
 
@@ -115,8 +115,8 @@
 
 **Files:**
 - Create: `data/config/upgrade_matrix.json`
-- Create: `src/flexengine/experiments/runners/upgrade.py`
-- Create: `src/flexengine/experiments/analysis/upgrade.py`
+- Create: `src/flexengine/research/experiments/upgrade.py`
+- Create: `src/flexengine/research/experiments/upgrade.py`
 - Create: `results/profiling/profile_upgrade.sh`
 - Modify: `README.md`
 - Modify: `docs/FINAL_REPORT.md`

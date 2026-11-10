@@ -1,18 +1,18 @@
 import pytest
 import torch
 
-from flexengine.attention.flashinfer_backend import (
+from flexengine.engine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.inference.attention.flashinfer_backend import (
     flashinfer_available,
     flashinfer_backend_stats,
     flashinfer_paged_decode_batch,
     flashinfer_workspace,
 )
-from flexengine.attention.paged import attention_for_request
-from flexengine.kv_cache.allocator import CacheLayout, PagedKVCache
+from flexengine.inference.attention.paged import attention_for_request
 
 
 def test_flashinfer_unavailable_fails_closed(monkeypatch):
-    monkeypatch.setattr("flexengine.attention.flashinfer_backend._FLASHINFER", None)
+    monkeypatch.setattr("flexengine.inference.attention.flashinfer_backend._FLASHINFER", None)
     q = torch.zeros(1, 2, 4)
     cache = PagedKVCache(CacheLayout(1, 2, 4, 1, 4))
 

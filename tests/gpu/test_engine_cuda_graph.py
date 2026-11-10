@@ -3,10 +3,10 @@ import os
 import pytest
 import torch
 
-from flexengine.config import EngineConfig
-from flexengine.models.qwen2 import Qwen2Adapter
-from flexengine.runtime import Engine
-from flexengine.scheduler.state import State
+from flexengine.engine.config import EngineConfig
+from flexengine.engine.runtime import Engine
+from flexengine.engine.scheduler.state import State
+from flexengine.inference.models.qwen2 import Qwen2Adapter
 
 pytestmark = [
     pytest.mark.gpu,

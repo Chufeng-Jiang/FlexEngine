@@ -59,25 +59,28 @@ The GPU worker is the sole owner of model execution. HTTP threads communicate th
 
 ```text
 src/flexengine/
-  api/server.py                    FastAPI, SSE, cancellation, health, metrics
-  runtime.py                       admission, batching, preemption, graph dispatch
-  scheduler/{state,policies}.py    lifecycle and three scheduling policies
-  kv_cache/{allocator,prefix}.py   pages, block tables, refcounts, prefix LRU
-  models/qwen2.py                  custom Qwen2.5 eager/static decoder paths
-  attention/paged.py               backend selection and reference attention
-  kernels/paged_attention.py       fused Triton paged-decode kernels
-  execution/cuda_graph.py          fixed-bucket capture/replay manager
-  sampling/sampler.py              greedy/top-k/temperature sampling
-  observability/                   environment, JSONL, NVTX, Prometheus
-src/flexengine/benchmarking/                    HTTP, engine and kernel benchmarks
-src/flexengine/experiments/                   matrix runner, aggregation and strict audit
-src/flexengine/cli/                unified command dispatch and server entry
-src/flexengine/tooling/            environment inspection and export
-tests/                             CPU, integration and real-GPU correctness
-data/config/                       benchmark and experiment configuration
-data/environment/                  frozen package exports and system metadata
-logs/                              service logs, separate from measurements
-results/                           JSONL, CSV, plots and profiler artifacts
+  engine/
+    config.py, runtime.py            configuration and continuous batching
+    scheduler/, kv_cache/            scheduling and paged memory
+    execution/, sampling/            graph replay and token sampling
+  inference/
+    models/                           custom Qwen2.5 decoder
+    attention/                        paged attention backends
+    kernels/                          Triton kernels
+  serving/
+    api/                              FastAPI, SSE and cancellation
+    cli/                              unified command dispatch
+  operations/
+    observability/                    metrics, tracing and NVTX
+    tooling/                          environment inspection and export
+  research/
+    benchmarking/                     workloads, statistics and profiling
+    experiments/                      runners, analysis and auditing
+tests/                                CPU, integration and real-GPU correctness
+data/config/                          experiment configuration
+data/environment/                     reproducible environment snapshots
+logs/                                 service logs
+results/                              JSONL, CSV, plots and profiler artifacts
 ```
 
 ## Validated environment
@@ -239,7 +242,7 @@ flexengine run-proposal --repetitions 3 --requests 8 \
   --max-output-tokens 32 --output results/proposal_20261108
 flexengine analyze-proposal \
   --input results/proposal_20261108 --repetitions 3
-python -m flexengine.experiments.analysis.audit \
+python -m flexengine.research.experiments.analysis.audit \
   --input results/proposal_20261108 \
   --configurations 39 --repetitions 3 --requests 8
 # Validated: 39 configurations, 936 completed requests, errors: []
@@ -281,7 +284,7 @@ vLLM runs in `.venv-vllm`, never in FlexEngine's environment. It uses vLLM 0.33.
 | FlexEngine E1 0.5B c4 | 1.054 ± 0.058 | 743.3 | 137.0 | 24/24 |
 | vLLM 0.33.0 | 14.779 ± 1.209 | 131.2 ± 111.9 | 14.6 ± 7.9 | 24/24 |
 
-See `src/flexengine/benchmarking/baselines/vllm/README.md`; raw summaries are in `results/vllm_20261109/`. This quantifies the gap to a production engine; it is not a claim that FlexEngine outperforms vLLM.
+See `src/flexengine/research/benchmarking/vllm/README.md`; raw summaries are in `results/vllm_20261109/`. This quantifies the gap to a production engine; it is not a claim that FlexEngine outperforms vLLM.
 
 ## Profiling reproduction
 
@@ -290,13 +293,13 @@ See `docs/NSIGHT_BASELINE.md` for the full report and commands.
 ```bash
 nsys profile --force-overwrite=true --trace=cuda,nvtx,osrt --sample=none \
   --stats=true -o results/profiling/nsys_baseline \
-  python -m flexengine.benchmarking.profiling.engine --steps 8 --batch-size 2 \
+  python -m flexengine.research.benchmarking.profiling.engine --steps 8 --batch-size 2 \
   --attention blockwise --trace-dir results/profiling/trace_baseline
 
 /usr/local/cuda/bin/ncu --set basic --nvtx \
   --nvtx-include attention_profile/ --force-overwrite \
   -o results/profiling/ncu_triton \
-  python -m flexengine.benchmarking.profiling.kernel \
+  python -m flexengine.research.benchmarking.profiling.kernel \
   --backend triton --seq-len 512 --iters 1
 ```
 

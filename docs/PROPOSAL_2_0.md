@@ -282,12 +282,12 @@ NVIDIA GPU 性能岗位明确列出 Nsight Systems、Nsight Compute、PyTorch Pr
 ```bash
 nsys profile --trace=cuda,nvtx,osrt --sample=none \
   --cuda-graph-trace=graph -o results/nsys/mixed_decode \
-  python -m flexengine.benchmarking.profiling.engine --model Qwen/Qwen2.5-0.5B-Instruct \
+  python -m flexengine.research.benchmarking.profiling.engine --model Qwen/Qwen2.5-0.5B-Instruct \
   --workload mixed --steps 200 --batch-size 4
 
 ncu --set full --target-processes all \
   -o results/ncu/paged_attention \
-  python -m flexengine.benchmarking.profiling.kernel --kernel paged_attention --batch-size 4
+  python -m flexengine.research.benchmarking.profiling.kernel --kernel paged_attention --batch-size 4
 ```
 
 **采样规则：** `nsys` 只抓稳定的少量代表性 step；`ncu` 更重，单独运行 kernel case；正式 QPS/latency 由不带 profiler 的服务实例测量。不要使用 `ncu` 下的 end-to-end 时间当正式性能结果。
@@ -351,16 +351,16 @@ src/flexengine/
     correctness/     # logits parity / paged attention
     integration/     # multi-request / API / cancellation
     stress/          # OOM / preemption / repeated reuse
-  src/flexengine/benchmarking/
-    traces/          # seeded prompt distributions
-    clients/         # AIPerf configs / custom replay
-    micro/           # eager vs graph / attention kernels
-    profiling/engine.py
-    profiling/kernel.py
-  src/flexengine/experiments/
-    config/           # immutable scenario configs
-    results/          # JSONL / CSV / profiler reports
-    analysis/         # statistical summaries and plots
+  src/flexengine/research/
+    benchmarking/
+      runner.py       # deterministic HTTP workload replay
+      statistics.py   # percentile and confidence summaries
+      profiling/      # engine, kernel and PyTorch profilers
+    experiments/
+      runners/        # Proposal and upgrade matrices
+      analysis/       # aggregation, plots and audit
+  data/               # immutable scenario configs and environment snapshots
+  results/            # JSONL, CSV and profiler reports
   docs/
     architecture.md
     design_decisions.md

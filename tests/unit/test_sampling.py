@@ -1,6 +1,6 @@
 import torch
 
-from flexengine.sampling.sampler import sample
+from flexengine.engine.sampling.sampler import sample
 
 
 def test_greedy_and_rng_reproducibility():

@@ -1,6 +1,6 @@
 import torch
 
-from flexengine.observability.environment import collect_environment, validate_run_metadata
+from flexengine.operations.observability.environment import collect_environment, validate_run_metadata
 
 
 def test_collect_environment_does_not_probe_cuda_for_cpu(monkeypatch):

@@ -32,10 +32,10 @@
 ### Task 1: Reproduction metadata and DoD ledger
 
 **Files:**
-- Create: `src/flexengine/observability/environment.py`
-- Create: `src/flexengine/tooling/environment.py`
+- Create: `src/flexengine/operations/tooling/environment.py`
+- Create: `src/flexengine/operations/tooling/environment.py`
 - Create: `docs/DOD_STATUS.md`
-- Modify: `src/flexengine/observability/traces.py`
+- Modify: `src/flexengine/operations/observability/`
 - Test: `tests/unit/test_environment.py`
 
 **Interfaces:**
@@ -53,7 +53,7 @@
 **Files:**
 - Modify: `tests/gpu/test_hf_parity.py`
 - Create: `tests/gpu/test_real_generation.py`
-- Modify: `src/flexengine/models/qwen2.py`
+- Modify: `src/flexengine/inference/models/qwen2.py`
 - Modify: `docs/QUICK_START_CN.md`
 
 **Interfaces:**
@@ -73,8 +73,8 @@
 - Create: `tests/integration/test_failures.py`
 - Modify: `tests/integration/test_runtime.py`
 - Modify: `tests/integration/test_api.py`
-- Modify: `src/flexengine/runtime.py`
-- Modify: `src/flexengine/api/server.py`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/serving/cli/server.py`
 
 **Interfaces:**
 - Produces tested behavior for disconnect, cancellation, 429 admission, KV exhaustion/preemption, cleanup, starvation bounds and worker fail-fast.
@@ -89,9 +89,9 @@
 
 **Files:**
 - Create: `data/config/proposal_matrix.json`
-- Create: `src/flexengine/experiments/matrix.py`
+- Create: `src/flexengine/research/experiments/`
 - Create: `tests/unit/test_experiment_matrix.py`
-- Modify: `src/flexengine/benchmarking/runner.py`
+- Modify: `src/flexengine/research/benchmarking/`
 
 **Interfaces:**
 - Produces: `load_matrix(path) -> list[RunSpec]`, `run_id(spec, repeat) -> str`, atomic completion marker and matched request-trace export/import.
@@ -105,9 +105,9 @@
 ### Task 5: E1-E4 configuration controls
 
 **Files:**
-- Modify: `src/flexengine/config.py`
-- Modify: `src/flexengine/cli/server.py`
-- Modify: `src/flexengine/experiments/matrix.py`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/serving/cli/server.py`
+- Modify: `src/flexengine/research/experiments/`
 - Test: `tests/unit/test_config.py`
 - Test: `tests/unit/test_experiment_matrix.py`
 
@@ -122,8 +122,8 @@
 ### Task 6: Prefix Cache allocator and index
 
 **Files:**
-- Create: `src/flexengine/kv_cache/prefix.py`
-- Modify: `src/flexengine/kv_cache/allocator.py`
+- Create: `src/flexengine/engine/kv_cache/`
+- Modify: `src/flexengine/engine/kv_cache/`
 - Create: `tests/unit/test_prefix_cache.py`
 - Modify: `tests/unit/test_allocator.py`
 
@@ -139,11 +139,11 @@
 ### Task 7: Prefix Cache runtime integration and E5 telemetry
 
 **Files:**
-- Modify: `src/flexengine/runtime.py`
-- Modify: `src/flexengine/scheduler/state.py`
-- Modify: `src/flexengine/models/qwen2.py`
-- Modify: `src/flexengine/observability/metrics.py`
-- Modify: `src/flexengine/observability/traces.py`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/engine/scheduler/`
+- Modify: `src/flexengine/inference/models/qwen2.py`
+- Modify: `src/flexengine/operations/observability/`
+- Modify: `src/flexengine/operations/observability/`
 - Create: `tests/integration/test_prefix_runtime.py`
 
 **Interfaces:**
@@ -158,8 +158,8 @@
 ### Task 8: CUDA Graph bucket manager
 
 **Files:**
-- Create: `src/flexengine/execution/cuda_graph.py`
-- Create: `src/flexengine/execution/__init__.py`
+- Create: `src/flexengine/engine/execution/`
+- Create: `src/flexengine/engine/execution/`
 - Create: `tests/gpu/test_cuda_graph.py`
 
 **Interfaces:**
@@ -173,10 +173,10 @@
 ### Task 9: Engine-integrated decode CUDA Graph
 
 **Files:**
-- Modify: `src/flexengine/models/qwen2.py`
-- Modify: `src/flexengine/runtime.py`
-- Modify: `src/flexengine/config.py`
-- Modify: `src/flexengine/observability/traces.py`
+- Modify: `src/flexengine/inference/models/qwen2.py`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/engine/`
+- Modify: `src/flexengine/operations/observability/`
 - Create: `tests/gpu/test_engine_cuda_graph.py`
 
 **Interfaces:**
@@ -191,8 +191,8 @@
 ### Task 10: Nsight baseline and bottleneck report
 
 **Files:**
-- Modify: `src/flexengine/benchmarking/profiling/engine.py`
-- Modify: `src/flexengine/benchmarking/profiling/kernel.py`
+- Modify: `src/flexengine/research/benchmarking/profiling/engine.py`
+- Modify: `src/flexengine/research/benchmarking/profiling/kernel.py`
 - Create: `docs/NSIGHT_BASELINE.md`
 - Create: `results/profiling/README.md`
 
@@ -207,9 +207,9 @@
 ### Task 11: Fused Triton Paged Attention
 
 **Files:**
-- Create: `src/flexengine/kernels/paged_attention.py`
-- Modify: `src/flexengine/attention/paged.py`
-- Modify: `src/flexengine/config.py`
+- Create: `src/flexengine/inference/kernels/paged_attention.py`
+- Modify: `src/flexengine/inference/attention/`
+- Modify: `src/flexengine/engine/`
 - Create: `tests/gpu/test_triton_paged_attention.py`
 
 **Interfaces:**
@@ -225,10 +225,8 @@
 
 **Files:**
 - Modify: `data/config/proposal_matrix.json`
-- Modify: `src/flexengine/experiments/matrix.py`
-- Modify: `src/flexengine/experiments/analyze.py`
-- Create: `src/flexengine/experiments/analyze_repeats.py`
-- Test: `tests/unit/test_analysis.py`
+- Modify: `src/flexengine/research/experiments/`
+- Modify: `src/flexengine/research/experiments/- Create: `src/flexengine/research/experiments/- Test: `tests/unit/test_analysis.py`
 
 **Interfaces:**
 - Consumes all runtime features and RunSpec.
@@ -242,8 +240,8 @@
 ### Task 13: Isolated vLLM comparison
 
 **Files:**
-- Create: `src/flexengine/benchmarking/baselines/vllm/README.md`
-- Create: `src/flexengine/benchmarking/baselines/vllm/run_server.sh`
+- Create: `src/flexengine/research/benchmarking/vllm/README.md`
+- Create: `src/flexengine/research/benchmarking/vllm/run_server.sh`
 - Create: `data/config/vllm_matched.json`
 
 **Interfaces:**

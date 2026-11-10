@@ -2,8 +2,8 @@ from dataclasses import replace
 
 from conftest import TinyAdapter
 
-from flexengine.runtime import Engine
-from flexengine.scheduler.state import State
+from flexengine.engine.runtime import Engine
+from flexengine.engine.scheduler.state import State
 
 
 def finish(engine: Engine, request, limit: int = 80) -> None:

@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from flexengine.benchmarking.statistics import bootstrap_ci, summarize_requests, validate_sample_counts
+from flexengine.research.benchmarking.statistics import bootstrap_ci, summarize_requests, validate_sample_counts
 
 
 def _request(serial: int, *, ttft: float, tpot: float, completed: bool = True) -> dict:
@@ -59,7 +59,7 @@ def test_invalid_sample_counts_are_rejected(warmup, measured, resamples):
 
 def test_benchmark_module_entrypoint_loads_statistics():
     result = subprocess.run(
-        [sys.executable, "-m", "flexengine.benchmarking.runner", "--help"], capture_output=True, text=True, check=False
+        [sys.executable, "-m", "flexengine.research.benchmarking.runner", "--help"], capture_output=True, text=True, check=False
     )
 
     assert result.returncode == 0, result.stderr

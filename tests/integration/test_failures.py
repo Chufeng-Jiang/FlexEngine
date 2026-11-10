@@ -4,9 +4,9 @@ from dataclasses import replace
 from conftest import TinyAdapter
 from fastapi.testclient import TestClient
 
-from flexengine.api.server import create_app
-from flexengine.runtime import Engine
-from flexengine.scheduler.state import State
+from flexengine.engine.runtime import Engine
+from flexengine.engine.scheduler.state import State
+from flexengine.serving.api.server import create_app
 
 
 class FailingAdapter(TinyAdapter):

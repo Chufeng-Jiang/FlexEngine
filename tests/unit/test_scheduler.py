@@ -1,5 +1,5 @@
-from flexengine.scheduler.policies import Scheduler
-from flexengine.scheduler.state import Request, State
+from flexengine.engine.scheduler.policies import Scheduler
+from flexengine.engine.scheduler.state import Request, State
 
 
 def req(name, prompt, cached=0, generated=None):

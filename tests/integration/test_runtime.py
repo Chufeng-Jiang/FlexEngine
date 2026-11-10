@@ -4,8 +4,8 @@ from queue import Empty
 
 from conftest import TinyAdapter
 
-from flexengine.runtime import BusyError, Engine
-from flexengine.scheduler.state import State
+from flexengine.engine.runtime import BusyError, Engine
+from flexengine.engine.scheduler.state import State
 
 
 def drain(req):

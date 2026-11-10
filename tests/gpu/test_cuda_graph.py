@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from flexengine.execution.cuda_graph import DecodeGraphManager
+from flexengine.engine.execution.cuda_graph import DecodeGraphManager
 
 
 def test_bucket_selection_pads_up_without_delaying():
